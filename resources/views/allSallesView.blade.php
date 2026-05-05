@@ -115,6 +115,11 @@
       </div>
     @endif
   @endauth
+  @guest
+  <div class="mb-3 d-flex gap-2">
+        <a href="{{ route('reservations.form') }}" class="btn btn-outline-primary">Voir mes réservations</a>
+      </div>
+  @endguest
 
   <div class="row g-3">
     @forelse($pays as $p)

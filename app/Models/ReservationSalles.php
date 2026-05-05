@@ -9,6 +9,7 @@ class ReservationSalles extends Model
 {
     protected $fillable = [
         'statut',
+        'otp',
         'nomSalle',
         'dateInscription',
         'dateEmission',
