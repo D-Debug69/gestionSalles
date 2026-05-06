@@ -106,7 +106,7 @@
                   @method('DELETE')
                     <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
                   </form>
-                    <button class="btn btn-sm btn-outline-primary">Voir</button>
+                    <button class="btn btn-sm btn-outline-primary">Modifier</button>
               </div>
           </div>
         </div>
