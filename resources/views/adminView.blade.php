@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -80,23 +80,20 @@
 
 <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
 
-<header class="page-hero">
-  <div class="hero-content container">
-    <h1>CBC-Vue Globale</h1>
-  </div>
-</header>
+@include('partials.header', ['title' => 'CBC-Vue Globale'])
 
   <main class="content container-fluid">
     <div class="container py-4">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0">Tableau de bord</h1>
-        @if (auth()->check() && auth()->user()->role === 'admin')
+        @if (auth()->check() && auth()->user()->hasRole('Admin'))
           <span class="text-muted">Bienvenue, {{ auth()->user()->prenom }}</span>
         @else
-          <span class="text-muted">Bienvenue, {{ auth()->user()}}</span>
+          <span class="text-muted">Bienvenue, {{ auth()->user()->nom }}</span>
         @endif
       </div>
 
+      @can('view salle')
       <div class="row g-3 mb-4">
         <!-- Div du boutton de gestion du CRUD des salles-->
         <div class="col-md-3" onclick="window.location.href='/allSallesView';" style="cursor: pointer;">
@@ -107,8 +104,10 @@
             </div>
           </div>
         </div>
+      @endcan
 
-        <!-- Div du boutton de gestion du CRUD des reservations-->
+      @can('view reservation')
+      <!-- Div du boutton de gestion du CRUD des reservations-->
         <div class="col-md-3" onclick="window.location.href='/allReservationsView';" style="cursor: pointer;">
           <div class="card card-overview shadow-sm">
             <div class="card-body">
@@ -117,7 +116,9 @@
             </div>
           </div>
         </div>
+      @endcan
 
+        @can('view user')
         <!-- Div du boutton de gestion du CRUD des utilisateurs-->
         <div class="col-md-3" onclick="window.location.href='/allUsersView';" style="cursor: pointer;">
           <div class="card card-overview shadow-sm">
@@ -127,6 +128,7 @@
             </div>
           </div>
         </div>
+        @endcan
 
         <!-- Div du boutton de gestion du CRUD des demandes-->
         <div class="col-md-3">

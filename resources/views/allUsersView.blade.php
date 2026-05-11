@@ -80,11 +80,7 @@
 
 <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
 
-<header class="page-hero">
-  <div class="hero-content container">
-    <h1>CBC-Gestion Utilisateurs</h1>
-  </div>
-</header>
+@include('partials.header', ['title' => 'CBC-Gestion Utilisateurs'])
 
 <main class="content">
   <!-- le contenu existant de la page -->
@@ -99,14 +95,18 @@
               <p class="small mb-2"><strong>Email:</strong> {{ $user->email }}</p>
             <p class="small mb-2"><strong>Ville:</strong> {{ $user->ville }}</p>
             <p class="small mb-2"><strong>Telephone:</strong> {{ $user->telephone }}</p>
-            <p class="small"><strong>Rôle:</strong> {{ $user->role }}</p>
+            <p class="small"><strong>Rôles:</strong> {{ $user->roles ? implode(', ', $user->roles) : 'Aucun' }}</p>
+            @can('delete user')
               <div class="d-flex gap-2">
                   <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Supprimer cet utilisateur ?')">
                   @csrf
                   @method('DELETE')
                     <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
                   </form>
+                  @endcan
+                  @can('update user')
                     <button class="btn btn-sm btn-outline-primary">Modifier</button>
+                  @endcan
               </div>
           </div>
         </div>
@@ -116,10 +116,11 @@
         <p class="text-muted">Aucun utilisateur trouvé</p>
       </div>
     @endforelse
-
+@can('create user')
       <div class="d-flex gap-2">
        <a href="{{ route('register') }}" class="btn btn-primary">Ajouter un utilisateur</a>
       </div>
+@endcan
 
    
     

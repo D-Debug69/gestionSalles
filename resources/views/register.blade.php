@@ -80,11 +80,7 @@
 
 <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
 
-<header class="page-hero">
-  <div class="hero-content container">
-    <h1>CBC-Gestion Utilisateurs</h1>
-  </div>
-</header>
+@include('partials.header', ['title' => 'CBC-Gestion Utilisateurs'])
 
 <main class="content">
 <div class="container mt-5">
@@ -158,19 +154,42 @@
 
                         <!-- Rôle -->
                         <div class="mb-3">
-                            <label for="role" class="form-label">Rôle</label>
-                            <select class="form-control @error('role') is-invalid @enderror" 
-                                    id="role" name="role" required>
-                                <option value="">-- Sélectionner un rôle --</option>
-                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="dfc" {{ old('role') == 'dfc' ? 'selected' : '' }}>Directeur de la FinanceComptabilité</option>
-                                <option value="rgs" {{ old('role') == 'rgs' ? 'selected' : '' }}>Responsable de la Gestion des Salles</option>
-                                <option value="dg" {{ old('role') == 'dg' ? 'selected' : '' }}>Directeur Général</option>
-                                <option value="cc" {{ old('role') == 'cc' ? 'selected' : '' }}>Chef Comptable</option>
-                                <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>Utilisateur</option>
-                            </select>
-                            @error('role')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <label for="roles" class="form-label">Rôles</label>
+            @php
+                $selectedRoles = old('roles', []);
+            @endphp
+
+    <div class="form-check">
+        <input class="form-check-input @error('roles') is-invalid @enderror" type="checkbox" name="roles[]" id="role_admin" value="admin" {{ in_array('admin', $selectedRoles) ? 'checked' : '' }}>
+        <label class="form-check-label" for="role_admin">Admin</label>
+    </div>
+
+    <div class="form-check">
+        <input class="form-check-input @error('roles') is-invalid @enderror" type="checkbox" name="roles[]" id="role_dfc" value="dfc" {{ in_array('dfc', $selectedRoles) ? 'checked' : '' }}>
+        <label class="form-check-label" for="role_dfc">Directeur de la Finance/Comptabilité</label>
+    </div>
+
+    <div class="form-check">
+        <input class="form-check-input @error('roles') is-invalid @enderror" type="checkbox" name="roles[]" id="role_rgs" value="rgs" {{ in_array('rgs', $selectedRoles) ? 'checked' : '' }}>
+        <label class="form-check-label" for="role_rgs">Responsable de la Gestion des Salles</label>
+    </div>
+
+    <div class="form-check">
+        <input class="form-check-input @error('roles') is-invalid @enderror" type="checkbox" name="roles[]" id="role_dg" value="dg" {{ in_array('dg', $selectedRoles) ? 'checked' : '' }}>
+        <label class="form-check-label" for="role_dg">Directeur Général</label>
+    </div>
+
+    <div class="form-check">
+        <input class="form-check-input @error('roles') is-invalid @enderror" type="checkbox" name="roles[]" id="role_cc" value="cc" {{ in_array('cc', $selectedRoles) ? 'checked' : '' }}>
+        <label class="form-check-label" for="role_cc">Chef Comptable</label>
+    </div>
+
+    <div class="form-check">
+        <input class="form-check-input @error('roles') is-invalid @enderror" type="checkbox" name="roles[]" id="role_user" value="user" {{ in_array('user', $selectedRoles) ? 'checked' : '' }}>
+        <label class="form-check-label" for="role_user">Utilisateur</label>
+    </div>
+                            @error('roles')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
 

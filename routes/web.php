@@ -33,7 +33,7 @@ Route::delete('/users/{id}', [App\Http\Controllers\logs::class, 'destroy'])->nam
 
 //route entreprises
 
-Route::middleware(['auth', 'role:admin,rgs'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/adminView',[App\Http\Controllers\GeneralController::class, 'adminView'])->name('adminView');
     //route salles
     Route::get('/allSallesView',[App\Http\Controllers\GeneralController::class, 'allSallesView'])->name('allSallesView');
@@ -56,4 +56,11 @@ Route::middleware(['auth', 'role:admin,rgs'])->group(function () {
     Route::get('/salle/{id}/edit', [App\Http\Controllers\salleController::class, 'edit'])->name('salle.edit');
     Route::put('/salle/{id}', [App\Http\Controllers\salleController::class, 'update'])->name('salle.update');
     Route::delete('/salle/{id}', [App\Http\Controllers\salleController::class, 'destroy'])->name('salle.destroy');
+});
+
+// Gestion des rôles et permissions (admin only)
+Route::middleware(['auth'])->group(function () {
+    Route::middleware('role:Admin')->group(function () {
+        Route::resource('admin/roles', App\Http\Controllers\Admin\RolePermissionController::class)->only(['index', 'edit', 'update']);
+    });
 });

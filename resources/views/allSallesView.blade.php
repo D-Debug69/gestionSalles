@@ -90,30 +90,24 @@
 
 <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
 
-  <header class="page-hero">
-    <div class="hero-content container">
-    @if(auth()->check())
-      @if(in_array(auth()->user()->role, ['admin','rgs','dg']))
-        <h1>CBC- Gestion des Salles</h1>
-      @else
-        <h1>Utilisateur - Bienvenue au portail du CBC</h1>
-      @endif
-    @else
-      <h1>Bienvenue — Portail CBC</h1>
-    @endif
-    </div>
-  </header>
+  @php
+      $headerTitle = auth()->check() && in_array(auth()->user()->role, ['admin','rgs','dg'])
+          ? 'CBC- Gestion des Salles'
+          : 'Utilisateur - Bienvenue au portail du CBC';
+  @endphp
+  @include('partials.header', ['title' => $headerTitle])
+  
 
 <main class="content">
   <!-- le contenu existant de la page -->
 <div class="container py-6">
   @auth
-    @if(in_array(auth()->user()->role, ['admin', 'rgs', 'dg']))
+    @can('create pays')
       <div class="mb-3 d-flex gap-2">
         <a href="{{ route('pays.create') }}" class="btn btn-primary">Ajouter un Pays</a>
         <a href="{{ route('ville.create') }}" class="btn btn-outline-primary">Ajouter une Ville + Salles</a>
       </div>
-    @endif
+    @endcan
   @endauth
 
   <div class="row g-3">
@@ -138,13 +132,13 @@
               <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#paysModal{{ $p->id }}">Voir</button>
 
               @auth
-                @if(in_array(auth()->user()->role, ['admin', 'rgs', 'dg']))
+                @can('delete pays')
                   <form method="POST" action="{{ route('pays.destroy', $p->id) }}" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Confirmer la suppression ?')">Supprimer</button>
                   </form>
-                @endif
+                @endcan
               @endauth
             </div>
           </div>
@@ -189,7 +183,7 @@
                               <span>{{ $salle->nom }} (Capacité: {{ $salle->capacite ?? 'N/A' }}, Prix: {{ $salle->prix ?? 'N/A' }}, Équipements: {{ $salle->equipements ?? 'N/A' }})</span>
 
                             @guest
-                              <a href="{{ route('reservGenerale', ['nomSalle' => $salle->nom]) }}" class="btn btn-sm btn-outline-primary">Réserver</a>
+                              <a href="{{ route('reservGenerale', ['salle_id' => $salle->id]) }}" class="btn btn-sm btn-outline-primary">Réserver</a>
                             @endguest
                             </div>
                           @endforeach
@@ -198,16 +192,18 @@
 
                       <!-- Boutons modifier/supprimer pour la ville -->
                       @auth
-                        @if(in_array(auth()->user()->role, ['admin', 'rgs', 'dg']))
+                        @can('edit ville')
                           <div class="d-flex gap-2">
                             <a href="{{ route('ville.update', $ville->id) }}" class="btn btn-sm btn-outline-warning">Modifier Ville</a>
+                        @endcan
+                        @can('delete ville')  
                             <form method="POST" action="{{ route('ville.destroy', $ville->id) }}" style="display:inline;">
                               @csrf
                               @method('DELETE')
                               <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Supprimer cette ville ?')">Supprimer Ville</button>
                             </form>
                           </div>
-                        @endif
+                        @endcan
                       @endauth
                     </div>
                   </div>

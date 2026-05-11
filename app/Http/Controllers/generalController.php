@@ -251,13 +251,15 @@ class GeneralController extends Controller
 
     public function reservationJson($id)
 {
-        $reservation = ReservationSalles::with(['user','salle','approvedCcBy','approvedDfcBy','approvedDgBy','approvedAdminBy'])
+        $reservation = ReservationSalles::with(['user','salle.ville','approvedCcBy','approvedDfcBy','approvedDgBy','approvedAdminBy'])
                         ->findOrFail($id);
 
         // Provide approver names to simplify frontend display (may be null)
         $data = $reservation->toArray();
         // Ensure a canonical salle name is present for frontend convenience
         $data['salle_nom'] = $reservation->salle ? ($reservation->salle->nom ?? $reservation->salle->name ?? $reservation->nomSalle) : ($reservation->nomSalle ?? null);
+        // Ajouter la ville de la salle
+        $data['salle_ville'] = $reservation->salle && $reservation->salle->ville ? $reservation->salle->ville->nom : null;
         $data['approved_cc_by_name'] = $reservation->approvedCcBy ? ($reservation->approvedCcBy->prenom ?? $reservation->approvedCcBy->name ?? $reservation->approvedCcBy->id) : null;
         $data['approved_dfc_by_name'] = $reservation->approvedDfcBy ? ($reservation->approvedDfcBy->prenom ?? $reservation->approvedDfcBy->name ?? $reservation->approvedDfcBy->id) : null;
         $data['approved_dg_by_name'] = $reservation->approvedDgBy ? ($reservation->approvedDgBy->prenom ?? $reservation->approvedDgBy->name ?? $reservation->approvedDgBy->id) : null;
@@ -272,8 +274,15 @@ class GeneralController extends Controller
     if (!$user) return response()->json(['error'=>'Non authentifié'], 401);
     $role = strtoupper($user->role); // s'assure majuscules
 
-    $allowedRoles = ['CC','DFC','DG','ADMIN'];
-    if (!in_array($role, $allowedRoles)) {
+    $allowedRoles = ['admin', 'rgs', 'dfc', 'dg', 'cc'];
+    $role = null;
+    foreach ($allowedRoles as $r) {
+        if ($user->hasRole($r)) {
+            $role = strtoupper($r);
+            break;
+        }
+    }
+    if (!$role) {
         return response()->json(['error'=>'Rôle non autorisé'], 403);
     }
 
@@ -308,7 +317,7 @@ class GeneralController extends Controller
 
     public function deleteReservation($id)
     {
-       abort_unless(auth()->check() && in_array(auth()->user()->role, ['admin', 'rgs', 'dg']), 403);
+       abort_unless(auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('rgs') || auth()->user()->hasRole('dg')), 403);
         
         $reservation = ReservationSalles::findOrFail($id);
         $reservation->delete();

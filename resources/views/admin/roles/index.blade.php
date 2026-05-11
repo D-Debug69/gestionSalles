@@ -1,12 +1,14 @@
-<!doctype html>
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Réservation Entreprise-Association</title>
-  
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Rôles et Permissions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body { padding-top: 70px; }
+        .badge { margin-right: 5px; margin-bottom: 5px; }
+         <style>
     body { padding-top: 70px; }
     .top-brand { font-weight:700; letter-spacing: .5px; }
     .card-overview { min-height: 120px; }
@@ -74,25 +76,67 @@
   .sidebar.show { transform: translateX(0); }
   .content { margin-left: 0; }
 }
+    
     </style>
 </head>
-
 <body>
-
     @include('partials.sidebar')
-
     <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
 
-    @include('partials.header', ['title' => 'CBC-Acceuil'])
-    <body>
-     <main class="content">
-        <h3> Bienvenue au portail du cbc</h3>
-     </main>
-    </body>
 
+    <main class="content">
+      @include('partials.header', ['title' => 'CBC-Gestion Rôles et Permissions'])
+        <div class="container py-5">
+            <h1 class="mb-4">Gestion des Rôles et Permissions</h1>
 
-    <!--Script de la sidebar -->
-    <script>
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Rôle</th>
+                            <th>Permissions</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($roles as $role)
+                            <tr>
+                                <td>
+                                    <strong>{{ ucfirst($role->name) }}</strong>
+                                </td>
+                                <td>
+                                    @forelse($role->permissions as $permission)
+                                        <span class="badge bg-info">{{ $permission->name }}</span>
+                                    @empty
+                                        <span class="text-muted">Aucune permission</span>
+                                    @endforelse
+                                </td>
+                                <td>
+                                    <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-sm btn-primary">
+                                        Modifier
+                                    </a>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Aucun rôle trouvé</td>
+                            </tr>
+                          @endforelse
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+    </main>
+
+ <script>
         (function(){
   const sidebar = document.getElementById('mainSidebar');
   const toggle = document.getElementById('sidebarToggle');
@@ -133,7 +177,8 @@
     }
   });
 })();
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

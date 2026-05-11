@@ -103,7 +103,7 @@ class villeController extends Controller
 
     public function destroy($id)
     {
-        abort_unless(auth()->check() && in_array(auth()->user()->role, ['admin', 'rgs', 'dg']), 403);
+        abort_unless(auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('rgs') || auth()->user()->hasRole('dg')), 403);
         
         $ville = Ville::findOrFail($id);
         $ville->delete(); // Les salles seront supprimées grâce à cascade

@@ -25,7 +25,7 @@ return new class extends Migration
     {
         // Remettre l'ancien enum
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['admin', '', 'user', 'DG', 'DFC', 'CC'])->default('user')->change();
+            $table->enum('role', ['admin', 'RGS', 'user', 'DG', 'DFC', 'CC'])->default('user')->change();
         });
         
         // Remettre les anciennes valeurs

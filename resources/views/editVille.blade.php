@@ -80,11 +80,7 @@
 
 <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
 
-<header class="page-hero">
-  <div class="hero-content container">
-    <h1>CBC-Gestion Utilisateurs</h1>
-  </div>
-</header>
+@include('partials.header', ['title' => 'CBC-Gestion Utilisateurs'])
 
 <body>
     

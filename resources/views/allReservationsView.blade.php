@@ -80,11 +80,7 @@
 
 <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
 
-<header class="page-hero">
-  <div class="hero-content container">
-    <h1>CBC-Gestion Reservations</h1>
-  </div>
-</header>
+@include('partials.header', ['title' => 'CBC-Gestion Reservations'])
 
 <main class="content">
   <!-- le contenu existant de la page -->
@@ -133,7 +129,7 @@
             <button class="btn btn-sm btn-outline-primary view-res-btn" data-id="{{ $r->id }}">Voir</button>
             
           @auth
-                        @if(in_array(auth()->user()->role, ['admin', 'rgs', 'dg']))
+                        @can('delete reservation')
                           <div class="d-flex gap-2">
                             <form method="POST" action="{{ route('reservations.destroy', $r->id) }}" style="display:inline;">
                               @csrf
@@ -141,7 +137,7 @@
                               <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Supprimer cette réservation ?')">Supprimer Réservation</button>
                             </form>
                           </div>
-                        @endif
+                        @endcan
                       @endauth
 
 
@@ -256,7 +252,8 @@
 
       // Salle: use canonical salle_nom provided by API
       const salleName = data.salle_nom || (data.nomSalle || (data.salle && (data.salle.nom || data.salle.name))) || '—';
-      document.getElementById('resSalle').textContent = salleName;
+      const salleVille = data.salle_ville ? ` (${data.salle_ville})` : '';
+      document.getElementById('resSalle').textContent = salleName + salleVille;
 
       // Demandeur: prefer reservation field, then related user prenom/name
       const demandeur = data.nom_demandeur || (data.user && (data.user.prenom || data.user.name)) || '—';

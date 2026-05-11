@@ -19,7 +19,14 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'Test User',
+            'prenom' => 'Test',
+            'telephone' => '1111',
+            'ville' => 'Testville',
             'email' => 'test@example.com',
+            'password' => bcrypt('0000'),
         ]);
+
+
+        $this->call(RolePermissionSeeder::class);
     }
 }

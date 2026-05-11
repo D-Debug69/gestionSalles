@@ -33,13 +33,22 @@ public function register(Request $request)
         'email' => 'required|email|unique:users',
         'ville' => 'required|string|max:255',
         'telephone' => 'required|string|max:20',
-        'role' => 'required|in:admin,dfc,rgs,dg,cc,user',
+        'roles' => 'required|array|min:1',
+        'roles.*' => 'required|string|in:admin,dfc,rgs,dg,cc,user',
         'password' => 'required|confirmed|min:4',
     ]);
 
     $validated['password'] = Hash::make($validated['password']);
     
-    User::create($validated);
+    User::create([
+    'name' => $validated['name'],
+    'prenom' => $validated['prenom'],
+    'email' => $validated['email'],
+    'ville' => $validated['ville'],
+    'telephone' => $validated['telephone'],
+    'password' => $validated['password'],
+    'roles' => $validated['roles'],
+]);
 
     return redirect()->route('allUsersView')->with('success', 'Utilisateur créé avec succès!');
 

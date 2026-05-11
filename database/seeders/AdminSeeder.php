@@ -19,9 +19,10 @@ class AdminSeeder extends Seeder
                 'name' => 'Admin',
                 'prenom' => 'Admin',
                 'telephone' => '22',
+                'ville' => 'Tunis',
                 'email' => 'admin@test.com',
                 'password' => bcrypt('1234'),
-                'role' => 'admin',
+                'roles' => ['Admin'],
             ]
         );
     }

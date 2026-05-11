@@ -83,11 +83,7 @@
 
     <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
 
-    <header class="page-hero">
-      <div class="hero-content container">
-        <h1>CBC-Reservation</h1>
-      </div>
-    </header>
+    @include('partials.header', ['title' => 'CBC-Reservation'])
 
 <main class="content">
 
@@ -111,13 +107,12 @@
         <form action="{{ route('reservations.store') }}" method="POST" enctype="multipart/form-data">
           @csrf
           <input type="hidden" name="nomSalle" value="{{ request('nomSalle') }}">
-
-          @if(request('nomSalle'))
-            <div class="mb-3">
-              <label for="salleSelectionnee" class="form-label">Salle sélectionnée</label>
-              <div class="form-control-plaintext">{{ request('nomSalle') }}</div>
-            </div>
-          @endif
+           @if(request('nomSalle'))
+              <div class="mb-3">
+                <label for="salleSelectionnee" class="form-label">Salle sélectionnée</label>
+                <div class="form-control-plaintext">{{ request('nomSalle') }}</div>
+              </div>
+            @endif
 
           <div class="mb-3">
             <label for="nomEntreprise" class="form-label">Nom de l'entreprise</label>
