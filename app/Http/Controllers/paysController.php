@@ -26,7 +26,7 @@ class paysController extends Controller
     }
     public function destroy($id)
 {
-    abort_unless(auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('rgs') || auth()->user()->hasRole('dg')), 403);
+    abort_unless(auth()->check() && (auth()->user()->hasRole('Admin') || auth()->user()->hasRole('Rgs') || auth()->user()->hasRole('Dg')), 403);
     
     $pays = Pays::findOrFail($id);
     $pays->delete();

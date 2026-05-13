@@ -136,7 +136,7 @@
                   <form method="POST" action="{{ route('pays.destroy', $p->id) }}" style="display:inline;">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Confirmer la suppression ?')">Supprimer</button>
+                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Confirmer la suppression ?')">Supprimer le pays</button>
                   </form>
                 @endcan
               @endauth
@@ -183,6 +183,7 @@
                               <span>{{ $salle->nom }} (Capacité: {{ $salle->capacite ?? 'N/A' }}, Prix: {{ $salle->prix ?? 'N/A' }}, Équipements: {{ $salle->equipements ?? 'N/A' }})</span>
 
                             @guest
+                              <a href="#" class="btn btn-sm btn-outline-primary">Voir </a>
                               <a href="{{ route('reservGenerale', ['salle_id' => $salle->id]) }}" class="btn btn-sm btn-outline-primary">Réserver</a>
                             @endguest
                             </div>
@@ -191,10 +192,10 @@
                       @endif
 
                       <!-- Boutons modifier/supprimer pour la ville -->
-                      @auth
-                        @can('edit ville')
+                      @auth                 
+                        @can('update ville')
                           <div class="d-flex gap-2">
-                            <a href="{{ route('ville.update', $ville->id) }}" class="btn btn-sm btn-outline-warning">Modifier Ville</a>
+                            <a href="{{ route('ville.edit', $ville->id) }}" class="btn btn-sm btn-outline-warning">Modifier Ville</a>
                         @endcan
                         @can('delete ville')  
                             <form method="POST" action="{{ route('ville.destroy', $ville->id) }}" style="display:inline;">

@@ -50,11 +50,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/addVille', [App\Http\Controllers\villeController::class, 'create'])->name('ville.create');
     Route::get('/ville/{id}/edit', [App\Http\Controllers\villeController::class, 'edit'])->name('ville.edit');
     Route::post('/addVille', [App\Http\Controllers\villeController::class, 'store'])->name('ville.store');
-    Route::put('/ville/{id}', [App\Http\Controllers\villeController::class, 'update'])->name('ville.update');
+    Route::put('/ville/{id}/update', [App\Http\Controllers\villeController::class, 'update'])->name('ville.update');
     Route::delete('/ville/{id}', [App\Http\Controllers\villeController::class, 'destroy'])->name('ville.destroy');
 
     Route::get('/salle/{id}/edit', [App\Http\Controllers\salleController::class, 'edit'])->name('salle.edit');
-    Route::put('/salle/{id}', [App\Http\Controllers\salleController::class, 'update'])->name('salle.update');
+    Route::put('/salle/{id}/update', [App\Http\Controllers\salleController::class, 'update'])->name('salle.update');
     Route::delete('/salle/{id}', [App\Http\Controllers\salleController::class, 'destroy'])->name('salle.destroy');
 });
 

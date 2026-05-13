@@ -81,8 +81,6 @@
 <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
 
 @include('partials.header', ['title' => 'CBC-Gestion Utilisateurs'])
-
-<body>
     
     <main class="content">
 
@@ -100,12 +98,14 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('ville.update') }}" id="villeForm" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('ville.update', $ville->id) }}" id="villeForm" enctype="multipart/form-data">
             @csrf
-
+            @method('PUT')
             <!-- Section Ville -->
             <fieldset class="mb-4 p-3 border rounded">
                 <legend class="fs-5 fw-bold">Informations de la Ville</legend>
+
+              <input type="hidden" name="pays_id" value="{{ $ville->pays_id }}">
 
                 <div class="mb-3">
                     <label for="nom_ville" class="form-label">Nom de la Ville</label>
@@ -121,13 +121,51 @@
             <fieldset class="mb-4 p-3 border rounded">
                 <legend class="fs-5 fw-bold">Salles</legend>
 
-                <div id="sallesContainer">
-                    <!-- Les salles seront ajoutées ici -->
+  <div id="sallesContainer">
+    @foreach($ville->salles as $index => $salle)
+        <div class="salle-form" id="salle-{{ $index }}">
+            <input type="hidden" name="salles[{{ $index }}][id]" value="{{ $salle->id }}">
+            <input type="hidden" name="salles[{{ $index }}][delete]" id="delete-{{ $index }}" value="0">
+
+            <div class="row align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Nom de la Salle</label>
+                    <input type="text" class="form-control" name="salles[{{ $index }}][nom]" value="{{ $salle->nom }}" required>
                 </div>
+                <div class="col-md-2">
+                    <label class="form-label">Capacité</label>
+                    <input type="number" class="form-control" name="salles[{{ $index }}][capacite]" value="{{ $salle->capacite }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Prix</label>
+                    <input type="number" class="form-control" name="salles[{{ $index }}][prix]" value="{{ $salle->prix }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Équipements</label>
+                    <input type="text" class="form-control" name="salles[{{ $index }}][equipements]" value="{{ $salle->equipements }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Photo</label>
+                    <input type="file" class="form-control" name="salles[{{ $index }}][image]" accept="image/*">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeSalleForm({{ $index }})">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    @endforeach
+  </div>
 
-                <button type="button" class="btn btn-secondary btn-edit-salle" id="editSalleBtn">COnfirmer la modification</button>
+                <br>
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-secondary btn-add-salle" id="addSalleBtn">Ajouter une Salle</button>
+                </div>
+                
             </fieldset>
-
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-success btn-edit-salle" id="editSalleBtn">Confirmer la modification</button>
+            </div>
+            <br>
             <div class="d-flex gap-2">
                 <a href="{{ route('allSallesView') }}" class="btn btn-secondary">Retour</a>
             </div>
@@ -148,17 +186,17 @@
       </footer>
 
 <script>
-        let salleCount = 0;
+        let salleCount = {{ $ville->salles->count() }};
 
-        
         function editSalleForm() {
     salleCount++;
     const html = `
         <div class="salle-form" id="salle-${salleCount}">
+                <input type="hidden" name="salles[${salleCount}][delete]" id="delete-${salleCount}" value="0">
             <div class="row align-items-end">
                 <div class="col-md-3">
                     <label for="salle_nom_${salleCount}" class="form-label">Nom de la Salle</label>
-                    <input type="text" class="form-control" name="salles[${salleCount}][nom]" id="salle_nom_${salleCount}" placeholder="Ex: Salle A" required value={{ $salle->nom }}>
+                    <input type="text" class="form-control" name="salles[${salleCount}][nom]" id="salle_nom_${salleCount}" placeholder="Ex: Salle A" required>
                 </div>
                 <div class="col-md-2">
                     <label for="salle_capacite_${salleCount}" class="form-label">Capacité</label>
@@ -186,7 +224,60 @@
 }
 
         // Ajoute une salle par défaut au chargement
-        editSalleForm();
+        // editSalleForm();
+
+        function addSalleForm() {
+    salleCount++;
+    const html = `
+        <div class="salle-form" id="salle-${salleCount}">
+        <input type="hidden" name="salles[${salleCount}][delete]" id="delete-${salleCount}" value="0">
+            <div class="row align-items-end">
+                <div class="col-md-3">
+                    <label for="salle_nom_${salleCount}" class="form-label">Nom de la Salle</label>
+                    <input type="text" class="form-control" name="salles[${salleCount}][nom]" id="salle_nom_${salleCount}" placeholder="Ex: Salle A" required>
+                </div>
+                <div class="col-md-2">
+                    <label for="salle_capacite_${salleCount}" class="form-label">Capacité</label>
+                    <input type="number" class="form-control" name="salles[${salleCount}][capacite]" id="salle_capacite_${salleCount}" placeholder="Ex: 50" min="1">
+                </div>
+                <div class="col-md-2">
+                    <label for="salle_prix_${salleCount}" class="form-label">Prix (XoF)</label>
+                    <input type="number" class="form-control" name="salles[${salleCount}][prix]" id="salle_prix_${salleCount}" placeholder="Ex: 50.00" step="0.01" min="0">
+                </div>
+                <div class="col-md-3">
+                    <label for="salle_equipements_${salleCount}" class="form-label">Équipements</label>
+                    <input type="text" class="form-control" name="salles[${salleCount}][equipements]" id="salle_equipements_${salleCount}" placeholder="Ex: Projecteur, Tables">
+                </div>
+                <div class="col-md-2">
+                    <label for="salle_image_${salleCount}" class="form-label">Photo</label>
+                    <input type="file" class="form-control" name="salles[${salleCount}][image]" id="salle_image_${salleCount}" accept="image/*">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeSalleForm(${salleCount})">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.getElementById('sallesContainer').insertAdjacentHTML('beforeend', html);
+}
+
+        function removeSalleForm(id) {
+            const deleteInput = document.getElementById(`delete-${id}`);
+            const elem = document.getElementById(`salle-${id}`);
+
+            if(!elem) return;
+
+            if(deleteInput) {
+                deleteInput.value = '1'; // Marque pour suppression
+                elem.style.display = 'none'; // Cache le formulaire, mais ne le supprime pas du DOM
+            return;
+              } 
+            
+                elem.remove(); // Supprime le formulaire si c'est une nouvelle salle
+            
+        }
+
+        document.getElementById('addSalleBtn').addEventListener('click', addSalleForm);
     </script>
 
   <script>
