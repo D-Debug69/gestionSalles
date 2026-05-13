@@ -16,7 +16,7 @@
   height: 220px;
   background-image:
     linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.05)),
-    url('{{ asset("images/header.jpg") }}');
+    url('{{ asset("images/cbc.jpeg") }}');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -86,6 +86,76 @@
     @include('partials.header', ['title' => 'CBC-Reservation'])
 
 <main class="content">
+
+
+@if(session('otp'))
+<!-- Modal OTP auto-fermable -->
+<div class="modal fade" id="otpModal" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">✅ Votre code OTP</h5>
+        <button type="button" class="btn-close btn-close-white" id="closeModalBtn" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="mb-4">Conservez ce code pour consulter votre réservation :</p>
+        <div style="font-size: 3rem; font-weight: bold; color: #28a745; text-align: center; padding: 2rem; border: 3px solid #28a745; border-radius: 10px; background: #f8f9fa; letter-spacing: 5px; font-family: 'Courier New', monospace;">
+          {{ session('otp') }}
+        </div>
+        <p class="mt-4 text-muted">
+          <small>Ce modal se fermera automatiquement dans <span id="countdown">10</span> secondes</small>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="manualCloseBtn">Fermer</button>
+        <button type="button" class="btn btn-primary" onclick="copyToClipboard()">Copier le code</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.addEventListener('load', () => {
+    const modal = new bootstrap.Modal(document.getElementById('otpModal'), { backdrop: 'static', keyboard: false });
+    modal.show();
+
+  let seconds = 10;
+  const countdownEl = document.getElementById('countdown');
+  const interval = setInterval(() => {
+    seconds--;
+    countdownEl.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(interval);
+      modal.hide();
+    }
+  }, 1000);
+
+  document.getElementById('closeModalBtn').addEventListener('click', () => {
+    clearInterval(interval);
+    modal.hide();
+  });
+  document.getElementById('manualCloseBtn').addEventListener('click', () => {
+    clearInterval(interval);
+    modal.hide();
+  });
+
+  function copyToClipboard() {
+    const otp = document.querySelector('[style*="font-family"]').textContent.trim();
+    navigator.clipboard.writeText(otp).then(() => {
+      alert('Code copié !');
+    });
+  }
+});
+</script>
+@endif
+
+
+
+<div>
+  <button class="btn btn-outline-secondary" onclick="window.location.href='/'">
+    Retour à l'accueuil
+  </button>
+</div>
 
 <div  class="container mt-5">
 <p> Bienvenue veuillez choisir votre profil</p>

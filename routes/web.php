@@ -16,6 +16,10 @@ Route::post('/reservations/{id}/approve', [App\Http\Controllers\GeneralControlle
 Route::get('/reservations/{id}', [App\Http\Controllers\GeneralController::class, 'showReservation'])->name('reservations.show'); // optionnel page complète
 Route::delete('/reservations/{id}', [App\Http\Controllers\GeneralController::class, 'deleteReservation'])->name('reservations.destroy');
 
+//voir les reservations en tant qu'unconnected
+Route::get('/my-reservationsForm', [App\Http\Controllers\GeneralController::class, 'myReservationsForm'])->name('reservations.form');
+Route::post('/my-reservations', [App\Http\Controllers\GeneralController::class, 'searchReservations'])->name('reservations.search');
+
 //gestion du saving des docs
 Route::post('/docTelechargement',[App\Http\Controllers\GeneralController::class, 'store'])->name('docTelechargement');
 

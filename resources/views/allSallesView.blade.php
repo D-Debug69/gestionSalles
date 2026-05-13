@@ -25,7 +25,7 @@
   height: 220px;
   background-image:
     linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.05)),
-    url('{{ asset("images/header.jpg") }}');
+    url('{{ asset("images/cbc.jpeg") }}');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -109,12 +109,17 @@
       </div>
     @endcan
   @endauth
+  @guest
+  <div class="mb-3 d-flex gap-2">
+        <a href="{{ route('reservations.form') }}" class="btn btn-outline-primary">Voir mes réservations</a>
+      </div>
+  @endguest
 
   <div class="row g-3">
     @forelse($pays as $p)
       <div class="col-sm-6 col-md-4 col-lg-3">
         <div class="card card-overview shadow-sm">
-          <img src="{{ asset('images/header.jpg') }}" border="20px" class="card-img-top" alt="{{ $p->nom }}">
+          <img src="{{ asset('images/cbc.jpeg') }}" border="20px" class="card-img-top" alt="{{ $p->nom }}">
           <div class="card-body">
             <h6 class="card-title">{{ $p->nom }}</h6>
             <p class="h4 mb-2">{{ $p->villes->count() }} villes</p>

@@ -80,61 +80,29 @@
 
 <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
 
-@include('partials.header', ['title' => 'CBC-Gestion Utilisateurs'])
+<header class="page-hero">
+  <div class="hero-content container">
+    <h1>User---Mes  reservations</h1>
+  </div>
+</header>
 
 <main class="content">
-  <!-- le contenu existant de la page -->
-
-  <div class="container py-6">
-    <div class="row g-3">
-    @forelse($users as $user)
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="card card-overview shadow-sm">
-          <div class="card-body">
-            <h6 class="card-title">{{ $user->prenom }} {{ $user->name }}</h6>
-              <p class="small mb-2"><strong>Email:</strong> {{ $user->email }}</p>
-            <p class="small mb-2"><strong>Ville:</strong> {{ $user->ville }}</p>
-            <p class="small mb-2"><strong>Telephone:</strong> {{ $user->telephone }}</p>
-            <p class="small"><strong>Rôles:</strong> {{ $user->roles ? implode(', ', $user->roles) : 'Aucun' }}</p>
-            @can('delete user')
-              <div class="d-flex gap-2">
-                  <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Supprimer cet utilisateur ?')">
-                  @csrf
-                  @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
-                  </form>
-                  @endcan
-                  @can('update user')
-                    <button class="btn btn-sm btn-outline-primary">Modifier</button>
-                  @endcan
-              </div>
-          </div>
-        </div>
-      </div>
-    @empty
-      <div class="col-12">
-        <p class="text-muted">Aucun utilisateur trouvé</p>
-      </div>
-    @endforelse
-@can('create user')
-      <div class="d-flex gap-2">
-       <a href="{{ route('register') }}" class="btn btn-primary">Ajouter un utilisateur</a>
-      </div>
-@endcan
-
-   
-    
+<form action="{{ route('reservations.search') }}" method="POST">
+    @csrf
+    <div class="mb-3">
+        <label for="otp" class="form-label">Code OTP</label>
+        <input type="text" name="otp" id="otp" class="form-control" maxlength="6" required>
+        @error('otp')
+            <div class="text-danger">{{ $message }}</div>
+        @enderror
     </div>
-  </div>
-    
+    <button type="submit" class="btn btn-primary">Rechercher ma réservation</button>
+</form>
 </main>
 
-
-
-
-<footer class="text-muted small py-3">
+        <footer class="text-muted small py-3">
         © 2026 GestionSalles — Interface admin
-      </footer>
+        </footer>
 
   <script>
         (function(){
@@ -178,7 +146,7 @@
   });
 })();
   </script>
-</body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
+</body>
 </html>

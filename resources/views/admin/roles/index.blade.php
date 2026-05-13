@@ -18,7 +18,7 @@
   height: 220px;
   background-image:
     linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.05)),
-    url('{{ asset("images/header.jpg") }}');
+    url('{{ asset("images/cbc.jpeg") }}');
   background-size: cover;
   background-position: center;
   display: flex;

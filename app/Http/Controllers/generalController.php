@@ -76,6 +76,7 @@ class GeneralController extends Controller
             'dateInscription' => now(),
             'user_id' => Auth::id(),
             'entreprise_id' => $entreprise->id,
+            'otp' => rand(100000, 999999),
         ]);
         //dd($r);
 
@@ -124,6 +125,7 @@ class GeneralController extends Controller
             'dateInscription' => now(),
             'user_id' => Auth::id(),
             'association_id' => $association->id,
+            'otp' => rand(100000, 999999),
         ]);
 
         //dd($r);
@@ -132,10 +134,26 @@ class GeneralController extends Controller
         return redirect()->back()->withErrors(['error' => 'Type de demande non reconnu.']);
     }
 
-    return redirect()->back()->with('success', 'Réservation enregistrée avec succès.');
+    return redirect()->back()->with('success', 'Réservation enregistrée avec succès.')->with('otp', $r->otp);
 }
 
+public function myReservationsForm(){
+    return view('myReservationsForm');
+}
 
+public function searchReservations(Request $request){
+    $data = $request->validate([
+        'otp' => 'required|digits:6',
+    ]);
+$reservation = ReservationSalles::with(['entreprise', 'association', 'user', 'salle'])
+    ->where('otp', $data['otp'])
+    ->first();
+    if (!$reservation) {
+        return redirect()->back()->withErrors(['otp' => 'Aucune réservation trouvée pour ce code.']);
+    }
+    return view('myReservationsView', compact('reservation'));
+
+}
 
 
 /* public function storeReservation(Request $request)
@@ -274,7 +292,7 @@ class GeneralController extends Controller
     if (!$user) return response()->json(['error'=>'Non authentifié'], 401);
     $role = strtoupper($user->role); // s'assure majuscules
 
-    $allowedRoles = ['admin', 'rgs', 'dfc', 'dg', 'cc'];
+    $allowedRoles = ['Admin', 'rgs', 'dfc', 'dg', 'cc'];
     $role = null;
     foreach ($allowedRoles as $r) {
         if ($user->hasRole($r)) {
@@ -305,7 +323,15 @@ class GeneralController extends Controller
     $reservation->save();
 
     // Si CC + DFC + DG approuvés le statut est confirmé
-    if ($reservation->approved_cc && $reservation->approved_dfc && $reservation->approved_dg) {
+$approvedCount= collect([
+    $reservation->approved_cc,
+    $reservation->approved_dfc,
+    $reservation->approved_dg,
+    $reservation->approved_admin,
+    $reservation->approved_rgs,
+])->filter()->count();
+
+    if ($approvedCount >= 3) {
         $reservation->statut = 'confirmed';
         $reservation->dateTraitement = now();
         $reservation->save();

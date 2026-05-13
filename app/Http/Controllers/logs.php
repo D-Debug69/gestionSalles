@@ -63,7 +63,7 @@ public function destroy($id)
 {
     $user = User::findOrFail($id);
 
-    if (auth()->user()->role !== 'admin') {
+    if (auth()->user()->role !== 'Admin') {
         abort(403, 'Accès interdit');
     }
 
