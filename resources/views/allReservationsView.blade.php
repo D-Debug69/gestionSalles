@@ -84,7 +84,12 @@
 
 <main class="content">
   <!-- le contenu existant de la page -->
-@foreach($reservations as $r)
+@if ($reservations->isEmpty())
+<div class="alert alert-info">
+  <p>Aucune réservation trouvée.</p>
+</div>
+@else
+  @foreach($reservations as $r)
   <div class="col">
     <div class="card card-overview shadow-sm">
       <div class="card-body">
@@ -147,12 +152,13 @@
     </div>
   </div>
 @endforeach
+@endif
 </main>
 
         <footer class="text-muted small py-3">
         © 2026 GestionSalles — Interface admin
         </footer>
-
+<!-- Script sidebar -->
 <script>
         (function(){
   const sidebar = document.getElementById('mainSidebar');
@@ -196,7 +202,6 @@
 })();
   </script>
 
-
 <!-- Modal de detail des reservations -->
 <div class="modal fade" id="reservationModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
@@ -207,11 +212,21 @@
       </div>
       <div class="modal-body">
         <div id="resContent">
-          <p><strong>Salle :</strong> <span id="resSalle">—</span></p>
+          <p><strong>Salle demandée:</strong> <span id="resSalle">—</span></p>
           <p><strong>Demandeur :</strong> <span id="resNom">—</span></p>
           <p><strong>Email :</strong> <span id="resEmail">—</span></p>
           <p><strong>Téléphone :</strong> <span id="resPhone">—</span></p>
-          <p><strong>Détails :</strong> <span id="resDetails">—</span></p>
+          
+          <div class="col-lg-4">
+            <div class="card shadow-sm">
+              <div class="card-body">
+              <h5 class="card-title">Détails du profil</h5>
+              <div id="profileDetails">
+                  <p>Aucune info d'entreprise/association liée.</p>
+              </div>
+              </div>
+            </div>
+          </div>
 
           <h6>Approvals</h6>
           <ul id="resApprovals">
@@ -221,13 +236,14 @@
             <li data-role="ADMIN">Admin: <span class="status">—</span></li>
           </ul>
 
-          <div id="pdfWrapper" style="display:none;">
-            <h6>Document PDF</h6>
-            <a id="resPdfLink" class="btn btn-sm btn-outline-secondary" target="_blank">Ouvrir PDF</a>
-            <div style="height:480px; margin-top:8px;">
-              <iframe id="resPdfFrame" style="width:100%; height:100%; border:0;"></iframe>
-            </div>
+          <div id="docWrapper" style="display:none;">
+            <h6>Documents</h6>
+              <div class="mb-2">
+                <a id="resAutorisationLink" class="btn btn-sm btn-outline-secondary me-2" target="_blank">Autorisation mairie</a>
+                <a id="resDocumentForceLink" class="btn btn-sm btn-outline-secondary" target="_blank">Document de force</a>
+              </div>
           </div>
+
         </div>
       </div>
       <div class="modal-footer">
@@ -237,6 +253,7 @@
     </div>
   </div>
 </div>
+
 <!-- Script JS -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <script>
@@ -266,7 +283,31 @@
       // Téléphone: prefer reservation telephone, then related user telephone or phone
       const phone = data.telephone || (data.user && (data.user.telephone || data.user.phone)) || '—';
       document.getElementById('resPhone').textContent = phone;
-      document.getElementById('resDetails').textContent = data.details ?? '—';
+
+      //const detailsEl = document.getElementById('resDetails');
+       // if (detailsEl) detailsEl.textContent = data.details ?? '—';
+        //pour details
+      const profileDetails = document.getElementById('profileDetails');
+if (data.entreprise) {
+  profileDetails.innerHTML = `
+    <p><strong>Type :</strong> Entreprise</p>
+    <p><strong>Forme :</strong> ${data.entreprise.typeEntreprise || '—'}</p>
+    <p><strong>RCCM :</strong> ${data.entreprise.rccm || '—'}</p>
+    <p><strong>IFU :</strong> ${data.entreprise.ifu || '—'}</p>
+    <p><strong>Pays :</strong> ${data.entreprise.pays || '—'}</p>
+    <p><strong>Ville :</strong> ${data.entreprise.ville || '—'}</p>
+  `;
+} else if (data.association) {
+  profileDetails.innerHTML = `
+    <p><strong>Type :</strong> Association</p>
+    <p><strong>Forme :</strong> ${data.association.typeAssociation || '—'}</p>
+    <p><strong>Recepisse :</strong> ${data.association.recepisse || '—'}</p>
+    <p><strong>Pays :</strong> ${data.association.pays || '—'}</p>
+    <p><strong>Ville :</strong> ${data.association.ville || '—'}</p>
+  `;
+} else {
+  profileDetails.innerHTML = '<p>Aucune info d\'entreprise/association liée.</p>';
+}
 
       // approvals
       const map = {
@@ -299,14 +340,30 @@
       });
 
       // PDF
-      if (data.pdf_path) {
-        document.getElementById('pdfWrapper').style.display = 'block';
-        const url = '/storage/' + data.pdf_path;
-        document.getElementById('resPdfLink').href = url;
-        document.getElementById('resPdfFrame').src = url;
-      } else {
-        document.getElementById('pdfWrapper').style.display = 'none';
-      }
+      const autorisationUrl = data.entreprise_autorisation_url || data.association_autorisation_url;
+      const documentForceUrl = data.entreprise_document_force_url || data.association_document_force_url;
+
+if (autorisationUrl || documentForceUrl) {
+  document.getElementById('docWrapper').style.display = 'block';
+  const autorisationLink = document.getElementById('resAutorisationLink');
+  const documentForceLink = document.getElementById('resDocumentForceLink');
+
+  if (autorisationUrl) {
+    autorisationLink.href = autorisationUrl;
+    autorisationLink.style.display = 'inline-block';
+  } else {
+    autorisationLink.style.display = 'none';
+  }
+
+  if (documentForceUrl) {
+    documentForceLink.href = documentForceUrl;
+    documentForceLink.style.display = 'inline-block';
+  } else {
+    documentForceLink.style.display = 'none';
+  }
+} else {
+  document.getElementById('docWrapper').style.display = 'none';
+}
 
       // Approve button visibility
       const approveBtn = document.getElementById('approveBtn');

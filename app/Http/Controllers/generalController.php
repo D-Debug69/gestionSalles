@@ -218,11 +218,21 @@ $reservation = ReservationSalles::with(['entreprise', 'association', 'user', 'sa
 }
     public function reservationJson($id)
 {
-        $reservation = ReservationSalles::with(['user','salle.ville','approvedCcBy','approvedDfcBy','approvedDgBy','approvedAdminBy'])
+        $reservation = ReservationSalles::with(['user','salle.ville','entreprise','association','approvedCcBy','approvedDfcBy','approvedDgBy','approvedAdminBy'])
                         ->findOrFail($id);
 
         // Provide approver names to simplify frontend display (may be null)
         $data = $reservation->toArray();
+        //gestion des pdf
+$data['entreprise_autorisation'] = $reservation->entreprise?->autorisationMairieE;
+$data['entreprise_document_force'] = $reservation->entreprise?->documentForceE;
+$data['association_autorisation'] = $reservation->association?->autorisationMairieA;
+$data['association_document_force'] = $reservation->association?->documentForceA;
+        //
+$data['entreprise_autorisation_url'] = $data['entreprise_autorisation'] ? Storage::url($data['entreprise_autorisation']) : null;
+$data['entreprise_document_force_url'] = $data['entreprise_document_force'] ? Storage::url($data['entreprise_document_force']) : null;
+$data['association_autorisation_url'] = $data['association_autorisation'] ? Storage::url($data['association_autorisation']) : null;
+$data['association_document_force_url'] = $data['association_document_force'] ? Storage::url($data['association_document_force']) : null;
         // Ensure a canonical salle name is present for frontend convenience
         $data['salle_nom'] = $reservation->salle ? ($reservation->salle->nom ?? $reservation->salle->name ?? $reservation->nomSalle) : ($reservation->nomSalle ?? null);
         // Ajouter la ville de la salle
@@ -343,7 +353,7 @@ $approvedCount= collect([
 
     public function deleteReservation($id)
     {
-       abort_unless(auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('rgs') || auth()->user()->hasRole('dg')), 403);
+       abort_unless(auth()->check() && (auth()->user()->hasRole('admin') ||auth()->user()->hasRole('Admin')|| auth()->user()->hasRole('rgs') || auth()->user()->hasRole('dg')), 403);
         
         $reservation = ReservationSalles::findOrFail($id);
         $reservation->delete();
