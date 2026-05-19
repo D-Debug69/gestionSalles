@@ -15,7 +15,7 @@
     @auth
       
         <li class="nav-item"><a class="nav-link active" href="/adminView">Tableau de bord</a></li>
-        @can('view salles')
+        @can('view salle')
         <li class="nav-item"><a class="nav-link" href="/allSallesView">Salles</a></li>
         @endcan
         @can('view reservation')

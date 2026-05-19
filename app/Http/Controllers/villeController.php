@@ -59,7 +59,7 @@ class villeController extends Controller
                     'equipements' => $salleData['equipements'] ?? null,
                     'prix' => $salleData['prix'] ?? null,
                     'ville_id' => $ville->id,
-                    'statut' => 'indisponible', // ou une valeur par défaut
+                    'statut' => 'disponible', // ou une valeur par défaut
                     'image' => $salleImagePath,
                 ]);
             
@@ -128,7 +128,7 @@ if ($request->has('salles')) {
                 'prix' => $salleData['prix'] ?? null,
                 'equipements' => $salleData['equipements'] ?? null,
                 'ville_id' => $ville->id,
-                'statut' => 'indisponible',
+                'statut' => 'disponible',
                 'image' => $salleImagePath,
             ]);
         }

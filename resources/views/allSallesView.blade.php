@@ -188,8 +188,8 @@
                               <span>{{ $salle->nom }} (Capacité: {{ $salle->capacite ?? 'N/A' }}, Prix: {{ $salle->prix ?? 'N/A' }}, Équipements: {{ $salle->equipements ?? 'N/A' }})</span>
 
                             @guest
-                              <a href="#" class="btn btn-sm btn-outline-primary">Voir </a>
-                              <a href="{{ route('reservGenerale', ['salle_id' => $salle->id]) }}" class="btn btn-sm btn-outline-primary">Réserver</a>
+                              <button type="button" class="btn btn-sm btn-outline-primary" onclick="openSalleModal({{ $salle->id }})">Voir</button>
+                              <a href="{{ route('reservGenerale', ['salle_id' => $salle->id, 'nomSalle' => $salle->nom]) }}" class="btn btn-sm btn-outline-primary">Réserver</a>
                             @endguest
                             </div>
                           @endforeach
@@ -228,6 +228,29 @@
   </div>
 @endforeach
     
+<!-- Salle details + calendar modal (used by Voir buttons) -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+
+<div class="modal fade" id="salleModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="salleModalTitle">Salle</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="salleDetails" class="mb-3"></div>
+        <hr>
+        <div id="salleCalendar"></div>
+      </div>
+      <div class="modal-footer">
+        <a id="reserveLink" href="#" class="btn btn-primary">Réserver</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </main>
 
 
@@ -278,7 +301,77 @@
   });
 })();
   </script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/fr.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  let salleCalendar = null;
+  function openSalleModal(salleId) {
+    fetch(`/salles/${salleId}/json`)
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('salleModalTitle').textContent = data.nom || 'Salle';
+        document.getElementById('salleDetails').innerHTML = `
+          <div class="row g-3">
+            <div class="col-md-4"><img src="${data.image_url}" style="width:100%;height:220px;object-fit:cover"></div>
+            <div class="col-md-8">
+              <p><strong>Capacité:</strong> ${data.capacite || 'N/A'}</p>
+              <p><strong>Prix:</strong> ${data.prix ? data.prix + ' XOF' : 'N/A'}</p>
+              <p><strong>Équipements:</strong> ${data.equipements || 'N/A'}</p>
+              <p><strong>Ville:</strong> ${data.ville || 'N/A'}</p>
+            </div>
+          </div>
+        `;
+        document.getElementById('reserveLink').href = `/reservGenerale?salle_id=${salleId}&nomSalle=${encodeURIComponent(data.nom)}`;
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        // render calendar
+        const calendarEl = document.getElementById('salleCalendar');
+        if (salleCalendar) {
+          salleCalendar.destroy();
+          salleCalendar = null;
+        }
+        salleCalendar = new FullCalendar.Calendar(calendarEl, {
+          locale: 'fr',
+          initialView: 'timeGridWeek',
+          headerToolbar: { left: 'prev,next today', center: 'title', right: 'timeGridWeek,dayGridMonth' },
+          eventSources: [
+  {
+    url: `/salles/${salleId}/calendar`, // API qui renvoie les événements
+    method: 'GET',
+    failure: () => { alert('Erreur de chargement des événements'); }
+  },
+  {
+    events: [
+      {
+        daysOfWeek: [1, 2, 3, 4, 5, 6],
+        startTime: '12:00',
+        endTime: '13:00',
+        title: 'Fermé - Pause déjeuner',
+        rendering: 'background',
+        backgroundColor: 'rgba(23, 113, 173, 0.53)',
+        borderColor: '#ddd',
+      }
+    ]
+  }
+],
+
+         height: 600,
+         eventDisplay: 'block',
+         hiddenDays: [0],
+         slotMinTime: '08:00:00',
+         slotMaxTime: '19:00:00',
+         slotLabelInterval: '00:30:00',
+        });
+        salleCalendar.render();
+
+        const modal = new bootstrap.Modal(document.getElementById('salleModal'));
+        modal.show();
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Impossible de charger les informations de la salle.');
+      });
+  }
+  </script>
+</body>
 </html>

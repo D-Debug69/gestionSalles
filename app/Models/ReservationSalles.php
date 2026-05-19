@@ -11,6 +11,9 @@ class ReservationSalles extends Model
         'statut',
         'otp',
         'nomSalle',
+        'reservation_date',
+        'start_time',
+        'end_time',
         'dateInscription',
         'dateEmission',
         'dateTraitement',
@@ -41,6 +44,7 @@ class ReservationSalles extends Model
         'dateInscription' => 'datetime',
         'dateEmission' => 'datetime',
         'dateTraitement' => 'datetime',
+        'reservation_date' => 'date',
     ];
 
 

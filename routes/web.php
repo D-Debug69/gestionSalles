@@ -7,11 +7,15 @@ Route::get('/',[App\Http\Controllers\GeneralController::class, 'allSallesView'])
 
 //reservations
 Route::get('/reservGenerale',[App\Http\Controllers\GeneralController::class, 'reservGenerale'])->name('reservGenerale');
+
 //sauvegarder une reserv
 Route::post('/reservations', [App\Http\Controllers\GeneralController::class, 'storeReservation'])->name('reservations.store');
-
 Route::post('/reservations', [App\Http\Controllers\GeneralController::class, 'storeReservation'])->name('reservations.store');
 Route::get('/reservations/{id}/json', [App\Http\Controllers\GeneralController::class, 'reservationJson'])->name('reservations.json');
+
+// salle endpoints: info + calendar events (used by modal/calendar)
+Route::get('/salles/{id}/json', [App\Http\Controllers\GeneralController::class, 'salleJson'])->name('salles.json');
+Route::get('/salles/{id}/calendar', [App\Http\Controllers\GeneralController::class, 'salleCalendar'])->name('salles.calendar');
 Route::post('/reservations/{id}/approve', [App\Http\Controllers\GeneralController::class, 'approveReservation'])->name('reservations.approve');
 Route::get('/reservations/{id}', [App\Http\Controllers\GeneralController::class, 'showReservation'])->name('reservations.show'); // optionnel page complète
 Route::delete('/reservations/{id}', [App\Http\Controllers\GeneralController::class, 'deleteReservation'])->name('reservations.destroy');

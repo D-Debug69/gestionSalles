@@ -157,6 +157,17 @@
   </button>
 </div>
 
+@if ($errors->any())
+    <div class="alert alert-danger" style="position:fixed; top:20px; right:20px; z-index:9999;">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
 <div  class="container mt-5">
 <p> Bienvenue veuillez choisir votre profil</p>
 
@@ -306,6 +317,31 @@
               @endif
             </div>
 
+            <div class="col-md-6">
+              <label for="reservation_date" class="form-label">Date souhaitée</label>
+              <input type="date" name="reservation_date" id="reservation_date" class="form-control {{ $errors->has('reservation_date') ? 'is-invalid' : '' }}" value="{{ old('reservation_date') }}" required>
+              @if($errors->has('reservation_date')) <div class="invalid-feedback">{{ $errors->first('reservation_date') }}</div> @endif
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Choisir un créneau</label>
+              <div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="reservation_time" id="slot1" value="08:00-12:00" {{ old('reservation_time')=='08:00-12:00' ? 'checked' : '' }} required>
+                  <label class="form-check-label" for="slot1">08:00 — 12:00</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="reservation_time" id="slot2" value="13:30-18:30" {{ old('reservation_time')=='13:30-18:30' ? 'checked' : '' }}>
+                  <label class="form-check-label" for="slot2">13:30 — 18:30</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="reservation_time" id="slot3" value="08:00-18:30" {{ old('reservation_time')=='08:00-18:30' ? 'checked' : '' }}>
+                  <label class="form-check-label" for="slot3">08:00 — 18:30</label>
+                </div>
+                @if($errors->has('reservation_time')) <div class="text-danger small mt-1">{{ $errors->first('reservation_time') }}</div> @endif
+              </div>
+            </div>
+
             <div>
               <label for="autorisationMairieE">Autorisation Mairie :</label>
             <input type="file" name="autorisationMairieE" id="autorisationMairieE" accept="application/pdf" required>
@@ -439,6 +475,31 @@
               @if($errors->has('recepisse'))
                 <div class="invalid-feedback">{{ $errors->first('recepisse') }}</div>
               @endif
+            </div>
+
+            <div class="col-md-6">
+              <label for="reservation_date" class="form-label">Date souhaitée</label>
+              <input type="date" name="reservation_date" id="reservation_date" class="form-control {{ $errors->has('reservation_date') ? 'is-invalid' : '' }}" value="{{ old('reservation_date') }}" required>
+              @if($errors->has('reservation_date')) <div class="invalid-feedback">{{ $errors->first('reservation_date') }}</div> @endif
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Choisir un créneau</label>
+              <div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="reservation_time" id="slot1A" value="08:00-12:00" {{ old('reservation_time')=='08:00-12:00' ? 'checked' : '' }} required>
+                  <label class="form-check-label" for="slot1A">08:00 — 12:00</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="reservation_time" id="slot2A" value="13:30-18:30" {{ old('reservation_time')=='13:30-18:30' ? 'checked' : '' }}>
+                  <label class="form-check-label" for="slot2A">13:30 — 18:30</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="reservation_time" id="slot3A" value="08:00-18:30" {{ old('reservation_time')=='08:00-18:30' ? 'checked' : '' }}>
+                  <label class="form-check-label" for="slot3A">08:00 — 18:30</label>
+                </div>
+                @if($errors->has('reservation_time')) <div class="text-danger small mt-1">{{ $errors->first('reservation_time') }}</div> @endif
+              </div>
             </div>
 
             <div>

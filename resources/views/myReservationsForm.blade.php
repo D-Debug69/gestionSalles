@@ -97,7 +97,10 @@
         @enderror
     </div>
     <button type="submit" class="btn btn-primary">Rechercher ma réservation</button>
+
+    <a href="{{ route('home') }}" class="btn btn-outline-secondary">Retour à l'accueil</a>
 </form>
+    
 </main>
 
         <footer class="text-muted small py-3">
