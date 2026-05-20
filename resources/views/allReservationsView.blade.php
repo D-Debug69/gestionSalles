@@ -247,7 +247,12 @@
         </div>
       </div>
       <div class="modal-footer">
+        @can('accept reservation')
         <button id="approveBtn" class="btn btn-success d-none">Confirmer</button>
+        @endcan
+        @can('refuse reservation')
+        <button id="refuseBtn" class="btn btn-danger d-none">Refuser</button>
+        @endcan
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
       </div>
     </div>
@@ -335,7 +340,7 @@ if (data.entreprise) {
             el.textContent = 'Confirmé';
           }
         } else {
-          el.textContent = 'Non confirmé';
+          el.textContent = '----';
         }
       });
 
@@ -365,41 +370,88 @@ if (autorisationUrl || documentForceUrl) {
   document.getElementById('docWrapper').style.display = 'none';
 }
 
-      // Approve button visibility
-      const approveBtn = document.getElementById('approveBtn');
-      approveBtn.classList.add('d-none');
-      const allowed = ['CC','DFC','DG','ADMIN'];
-      if (allowed.includes(window.currentUserRole)) {
-        // check if this role already approved
-        const flagName = {
-          'CC':'approved_cc','DFC':'approved_dfc','DG':'approved_dg','ADMIN':'approved_admin'
-        }[window.currentUserRole];
-        if (!data[flagName]) {
-          approveBtn.classList.remove('d-none');
-          approveBtn.onclick = async () => {
-            approveBtn.disabled = true;
-            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const resp = await fetch(`/reservations/${data.id}/approve`, {
-              method:'POST',
-              headers: {'Content-Type':'application/json','X-CSRF-TOKEN': token, 'Accept':'application/json'},
-              body: JSON.stringify({})
-            });
-            const js = await resp.json();
-            if (!resp.ok) {
-              alert(js.error || 'Erreur');
-              approveBtn.disabled = false;
-              return;
-            }
-            // reload modal content by re-clicking
-            btn.click();
-          };
-        }
+      // Approve / Refuse button visibility (REMPLACER LE BLOC EXISTANT)
+const approveBtn = document.getElementById('approveBtn');
+const refuseBtn = document.getElementById('refuseBtn');
+if(approveBtn){
+  approveBtn.classList.add('d-none');
+}
+if(refuseBtn){
+  refuseBtn.classList.add('d-none');
+}
+
+const allowed = ['CC','DFC','DG','ADMIN','RGS'];
+if (allowed.includes(window.currentUserRole) && data.statut === 'pending') {
+  const flagName = {
+    'CC':'approved_cc','DFC':'approved_dfc','DG':'approved_dg','ADMIN':'approved_admin'
+  }[window.currentUserRole];
+
+  if (approveBtn && flagName && !data[flagName]) {
+    approveBtn.classList.remove('d-none');
+    approveBtn.onclick = async () => {
+      approveBtn.disabled = true;
+      try {
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const resp = await fetch(`/reservations/${data.id}/approve`, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json','X-CSRF-TOKEN': token,'Accept':'application/json'},
+          body: JSON.stringify({})
+        });
+        const js = await resp.json().catch(()=>({}));
+        if (!resp.ok) throw new Error(js.error || 'Erreur serveur');
+        btn.click(); // refresh modal
+      } catch (err) {
+        alert(err.message);
+        approveBtn.disabled = false;
       }
+    };
+  }
+
+    // Refuse visible pour tous les rôles autorisés
+    if(refuseBtn){
+  refuseBtn.classList.remove('d-none');
+  refuseBtn.onclick = async () => {
+    refuseBtn.disabled = true;
+    try {
+      const result = await refuseReservation(data.id);
+      alert('Réservation refusée avec succès');
+      // Ferme le modal et rafraîchis la page
+      const modal = bootstrap.Modal.getInstance(document.getElementById('reservationModal'));
+      modal.hide();
+      location.reload(); // Rafraîchis la page pour voir le statut mis à jour
+    } catch (err) {
+      alert(err.message || 'Erreur lors du refus');
+      refuseBtn.disabled = false;
+    }
+  };}
+}
 
       // show modal
       const modalEl = new bootstrap.Modal(document.getElementById('reservationModal'));
       modalEl.show();
     });
+
+    async function refuseReservation(id) {
+  const userRole = window.currentUserRole || '';
+  const payload = {};
+  
+  if (userRole === 'DFC') {
+    const reason = prompt("Entrez la raison du refus :");
+    if (!reason) throw new Error('Raison requise');
+    payload.motifRejet = reason;
+  }
+  
+  const token = document.querySelector('meta[name="csrf-token"]').content;
+  const resp = await fetch(`/reservations/${id}/refuse`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','X-CSRF-TOKEN': token},
+    body: JSON.stringify(payload),
+  });
+  
+  const js = await resp.json().catch(()=>({}));
+  if (!resp.ok) throw new Error(js.error || 'Erreur serveur');
+  return js;
+}
   });
 </script>
 

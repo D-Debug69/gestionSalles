@@ -14,10 +14,12 @@ Route::post('/reservations', [App\Http\Controllers\GeneralController::class, 'st
 Route::get('/reservations/{id}/json', [App\Http\Controllers\GeneralController::class, 'reservationJson'])->name('reservations.json');
 
 // salle endpoints: info + calendar events (used by modal/calendar)
-Route::middleware(['auth'])->group(function () {
+
 Route::get('/salles/{id}/json', [App\Http\Controllers\GeneralController::class, 'salleJson'])->name('salles.json');
 Route::get('/salles/{id}/calendar', [App\Http\Controllers\GeneralController::class, 'salleCalendar'])->name('salles.calendar');
+Route::middleware(['auth'])->group(function () {
 Route::post('/reservations/{id}/approve', [App\Http\Controllers\GeneralController::class, 'approveReservation'])->name('reservations.approve');
+Route::post('/reservations/{id}/refuse', [App\Http\Controllers\GeneralController::class, 'refuseReservation'])->name('reservations.refuse');
 Route::get('/reservations/{id}', [App\Http\Controllers\GeneralController::class, 'showReservation'])->name('reservations.show'); // optionnel page complète
 Route::delete('/reservations/{id}', [App\Http\Controllers\GeneralController::class, 'deleteReservation'])->name('reservations.destroy');
 });

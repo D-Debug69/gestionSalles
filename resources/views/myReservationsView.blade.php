@@ -96,8 +96,18 @@
               <h5 class="card-title">Informations générales</h5>
 
               <dl class="row mb-0">
-                <dt class="col-sm-4">Salle</dt>
+                <dt class="col-sm-4">Salle demandée</dt>
                 <dd class="col-sm-8">{{ $reservation->nomSalle ?? 'Non renseignée' }}</dd>
+
+                <dt class="col-sm-4">Date voulue</dt>
+                  <dd class="col-sm-8">
+                    {{ $reservation->reservation_date ? $reservation->reservation_date->format('d/m/Y') : 'Non renseignée' }}
+                  </dd>
+
+                <dt class="col-sm-4">Heure voulue</dt>
+                  <dd class="col-sm-8">
+                    {{ $reservation->start_time && $reservation->end_time? $reservation->start_time . ' - ' . $reservation->end_time: 'Non renseignée' }}
+                  </dd>
 
                 <dt class="col-sm-4">Code OTP</dt>
                 <dd class="col-sm-8">{{ $reservation->otp ?? '—' }}</dd>
@@ -137,6 +147,11 @@
                   @else
                     <span class="badge bg-secondary">{{ $reservation->statut }}</span>
                   @endif
+                </dd>
+
+                <dt class="col-sm-4">Motif de refus</dt>
+                <dd class="col-sm-8">
+                  {{ $reservation->motifRejet ?? '----' }}
                 </dd>
 
                 <dt class="col-sm-4">Date d'inscription</dt>

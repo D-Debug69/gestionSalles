@@ -4,7 +4,7 @@
     <br>
     @if(auth()->check())
       
-        <h6>Admin- Gestion Globale</h6>
+        <h6>{{ auth()->user()->name }}- Gestion Globale</h6>
       
     @else
       <h6>Utilisateur</h6>

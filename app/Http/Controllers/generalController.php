@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Gate;
 use Illuminate\Http\Request;
+use App\Helpers\PermissionHelper;
 use App\Models\Pays;
 use App\Models\User;
 use App\Models\Salle;
@@ -42,7 +44,7 @@ class generalController extends Controller
             'autorisationMairieE' => 'required|mimes:pdf|max:5120',
             'documentForceE' => 'required|mimes:pdf|max:5120',
             'reservation_date' => 'required|date',
-            'reservation_time' => 'required|in:08:00-12:00,13:30-18:30,08:00-18:30',
+            'reservation_time' => 'required|in:07:00-14:00,14:00-21:00,07:00-21:00',
             ];
             //validation
             $validator = \Validator::make($request->all(), $rules);
@@ -126,7 +128,7 @@ class generalController extends Controller
             'autorisationMairieA' => 'required|mimes:pdf|max:5120',
             'documentForceA' => 'required|mimes:pdf|max:5120',
             'reservation_date' => 'required|date',
-            'reservation_time' => 'required|in:08:00-12:00,13:30-18:30,08:00-18:30',
+            'reservation_time' => 'required|in:07:00-14:00,14:00-21:00,07:00-21:00',
             ];
             //validation
             $validator = \Validator::make($request->all(), $rules);
@@ -289,7 +291,6 @@ $data['association_document_force_url'] = $data['association_document_force'] ? 
                 'title' => ($r->nom_demandeur ?? $r->nomSalle) . ' — ' . $r->statut,
                 'start' => $start,
                 'end' => $end,
-                'url' => route('reservations.show', $r->id),
             ];
         })->filter()->values();
 
@@ -302,17 +303,11 @@ $data['association_document_force_url'] = $data['association_document_force'] ? 
     if (!$user) return response()->json(['error'=>'Non authentifié'], 401);
     $role = strtoupper($user->role); // s'assure majuscules
 
-    $allowedRoles = ['Admin', 'rgs', 'dfc', 'dg', 'cc'];
-    $role = null;
-    foreach ($allowedRoles as $r) {
-        if ($user->hasRole($r)) {
-            $role = strtoupper($r);
-            break;
-        }
-    }
-    if (!$role) {
+    $role = strtoupper($user->role); // clé dérivée du rôle détenu
+    if (! isset($map[$role]) && ! PermissionHelper::hasPermission($user, 'accept reservation')) {
         return response()->json(['error'=>'Rôle non autorisé'], 403);
     }
+
 
     $reservation = ReservationSalles::findOrFail($id);
 
@@ -332,7 +327,7 @@ $data['association_document_force_url'] = $data['association_document_force'] ? 
     $reservation->{$m['at']} = now();
     $reservation->save();
 
-    // Si CC + DFC + DG approuvés le statut est confirmé
+    // Si 3 approuvés le statut est confirmé
 $approvedCount= collect([
     $reservation->approved_cc,
     $reservation->approved_dfc,
@@ -351,6 +346,41 @@ $approvedCount= collect([
 }
 
 
+    public function refuseReservation(Request $request, $id)
+{
+    $user = Auth::user();
+    if (!$user) return response()->json(['error'=>'Non authentifié'], 401);
+
+    if (Gate::denies('refuse reservation')) {
+        return response()->json(['error'=>'Rôle non autorisé'], 403);
+    }
+    $role = strtoupper($user->role); // s'assure majuscules
+
+    $reservation = ReservationSalles::findOrFail($id);
+
+    // Seul DFC remplit la raison et change le statut
+    if ($role === 'DFC') {
+        $validated = $request->validate([
+            'motifRejet' => 'required|string|max:500',
+        ]);
+        $reservation->motifRejet = $validated['motifRejet'];
+        $reservation->statut = 'rejected';
+        $reservation->save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Réservation refusée',
+            'reservation' => $reservation
+        ]);
+    }
+
+    // Les autres rôles refusent sans changer le statut
+    return response()->json([
+        'success' => true,
+        'message' => 'Refus enregistré',
+        'reservation' => $reservation
+    ]);
+    }
     public function deleteReservation($id)
     {
        abort_unless(auth()->check() && (auth()->user()->hasRole('admin') ||auth()->user()->hasRole('Admin')|| auth()->user()->hasRole('rgs') || auth()->user()->hasRole('dg')), 403);
@@ -363,21 +393,81 @@ $approvedCount= collect([
     public function adminView()
     {
         $userCount = User::count();
-        $salleCount = Salle::count();
-       $reservationCount = ReservationSalles::count();
-    $pendingRequestsCount = ReservationSalles::where('statut', 'pending')->count();
 
-    return view('adminView', compact('userCount', 'salleCount', 'reservationCount', 'pendingRequestsCount'));
+        //salles en fonction de la ville de l'user
+        $salleQuery = Salle::query()->with('ville');
+        if (auth()->check() && !auth()->user()->hasRole('Admin')) {
+            $userCity = auth()->user()->ville;
+        if ($userCity) {
+            $salleQuery->whereHas('ville', function ($q) use ($userCity) {
+            $q->where('nom', $userCity);
+            });
+                        }
+        }
+        $salleCount = $salleQuery->count();
+
+       //reservations en fonction de la ville de l'user
+        $reservationQuery = ReservationSalles::query()->with('salle.ville');
+            if (auth()->check() && !auth()->user()->hasRole('Admin')) {
+                $userCity = auth()->user()->ville;
+            if ($userCity) {
+                $reservationQuery->whereHas('salle.ville', function ($q) use ($userCity) {
+                $q->where('nom', $userCity);
+            });
+                }
+            }
+        $reservationCount = $reservationQuery->count();
+
+        //reservations en attente de la ville de l'user
+        $pendingQuery = ReservationSalles::query()->with('salle.ville')->where('statut', 'pending');
+
+            if (auth()->check() && !auth()->user()->hasRole('Admin')) {
+                $userCity = auth()->user()->ville;
+            if ($userCity) {
+                $pendingQuery->whereHas('salle.ville', function ($q) use ($userCity) {
+                    $q->where('nom', $userCity);
+                });
+                }
+        }
+                $pendingRequestsCount = $pendingQuery->count();
+
+                $recentReservations = $reservationQuery->orderBy('created_at', 'desc')->take(5)->get();
+
+    return view('adminView', compact('userCount', 'salleCount', 'reservationCount', 'pendingRequestsCount','recentReservations'));
     
     }
     public function allSallesView(){
-         $pays = Pays::with('villes.salles')->get();
-        return view('allSallesView', ['pays' => $pays]);
+          $query = Pays::with('villes.salles');
+
+                if (auth()->check() && !auth()->user()->hasRole('Admin')) {
+                    $userCity = auth()->user()->ville;
+        
+                if ($userCity) {
+                    $query->whereHas('villes', function ($q) use ($userCity) {
+                        $q->where('nom', $userCity);
+                        });
+                    }
+                    }
+
+                $pays = $query->get();
+                return view('allSallesView', ['pays' => $pays]);
+
     }
-    public function allReservationsView(){
-       $reservations = ReservationSalles::with(['entreprise', 'association', 'user', 'salle'])
-        ->orderBy('created_at','desc')
-        ->get();
+    public function allReservationsView()
+    {
+        $query = ReservationSalles::with(['entreprise', 'association', 'user', 'salle.ville']);
+
+            if (auth()->check() && !auth()->user()->hasRole('Admin')) {
+                $userCity = auth()->user()->ville;
+
+            if ($userCity) {
+                $query->whereHas('salle.ville', function ($q) use ($userCity) {
+                $q->where('nom', $userCity);
+            });
+                            }
+            }
+
+    $reservations = $query->orderBy('created_at','desc')->get();
     return view('allReservationsView', compact('reservations'));
     }
     public function allUsersView(){

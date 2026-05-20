@@ -301,9 +301,11 @@
   });
 })();
   </script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/fr.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
   <script>
   let salleCalendar = null;
   function openSalleModal(salleId) {
@@ -358,9 +360,9 @@
          height: 600,
          eventDisplay: 'block',
          hiddenDays: [0],
-         slotMinTime: '08:00:00',
-         slotMaxTime: '19:00:00',
-         slotLabelInterval: '00:30:00',
+         slotMinTime: '07:00:00',
+         slotMaxTime: '21:00:00',
+         slotLabelInterval: '01:00:00',
         });
         salleCalendar.render();
 

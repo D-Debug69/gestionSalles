@@ -89,7 +89,7 @@
         @if (auth()->check() && auth()->user()->hasRole('Admin'))
           <span class="text-muted">Bienvenue, {{ auth()->user()->prenom }}</span>
         @else
-          <span class="text-muted">Bienvenue, {{ auth()->user()->nom }}</span>
+          <span class="text-muted">Bienvenue, {{ auth()->user()->name }}</span>
         @endif
       </div>
 
@@ -160,24 +160,29 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Salle A</td>
-                  <td>Dupont</td>
-                  <td>2026-04-20</td>
-                  <td>09:00 - 11:00</td>
-                  <td><span class="badge bg-success">Confirmée</span></td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Salle B</td>
-                  <td>Martin</td>
-                  <td>2026-04-19</td>
-                  <td>14:00 - 16:00</td>
-                  <td><span class="badge bg-warning text-dark">En attente</span></td>
-                </tr>
-                <!-- Ajoute d'autres lignes dynamiquement depuis ton contrôleur -->
-              </tbody>
+            @forelse ($recentReservations as $reservation)
+    <tr>
+      <td>{{ $loop->iteration }}</td>
+      <td>{{ $reservation->salle->nom ?? '—' }}</td>
+      <td>{{ $reservation->user->prenom ?? $reservation->nom_demandeur ?? 'Inconnu' }}</td>
+      <td>{{ $reservation->reservation_date }}</td>
+      <td>{{ $reservation->start_time }} - {{ $reservation->end_time }}</td>
+      <td>
+        @if ($reservation->statut === 'confirmed')
+          <span class="badge bg-success">Confirmée</span>
+        @elseif ($reservation->statut === 'pending')
+          <span class="badge bg-warning text-dark">En attente</span>
+        @else
+          <span class="badge bg-secondary">{{ ucfirst($reservation->statut) }}</span>
+        @endif
+      </td>
+    </tr>
+  @empty
+    <tr>
+      <td colspan="6" class="text-center">Aucune réservation récente</td>
+    </tr>
+  @endforelse
+</tbody>
             </table>
           </div>
         </div>
