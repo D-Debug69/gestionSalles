@@ -3,8 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/',[App\Http\Controllers\GeneralController::class, 'allSallesView'])->name('home');
-
+Route::get('/salles',[App\Http\Controllers\GeneralController::class, 'allSallesView'])->name('home');
+Route::get('/',[App\Http\Controllers\GeneralController::class, 'accueil'])->name('accueil');
 //reservations
 Route::get('/reservGenerale',[App\Http\Controllers\GeneralController::class, 'reservGenerale'])->name('reservGenerale');
 
@@ -17,7 +17,7 @@ Route::get('/reservations/{id}/json', [App\Http\Controllers\GeneralController::c
 
 Route::get('/salles/{id}/json', [App\Http\Controllers\GeneralController::class, 'salleJson'])->name('salles.json');
 Route::get('/salles/{id}/calendar', [App\Http\Controllers\GeneralController::class, 'salleCalendar'])->name('salles.calendar');
-Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
 Route::post('/reservations/{id}/approve', [App\Http\Controllers\GeneralController::class, 'approveReservation'])->name('reservations.approve');
 Route::post('/reservations/{id}/refuse', [App\Http\Controllers\GeneralController::class, 'refuseReservation'])->name('reservations.refuse');
 Route::get('/reservations/{id}', [App\Http\Controllers\GeneralController::class, 'showReservation'])->name('reservations.show'); // optionnel page complète
@@ -37,11 +37,12 @@ Route::post('/logout',[App\Http\Controllers\logs::class, 'logout'])->name('logou
 Route::post('/login',[App\Http\Controllers\logs::class, 'loginAdmin'])->name('login');
 Route::get('/login',[App\Http\Controllers\logs::class, 'showloginAdmin'])->name('login');
 
-//inscription d'userss
+//inscription d'users
+Route::middleware(['auth'])->group(function () {
 Route::post('/register',[App\Http\Controllers\logs::class, 'register'])->name('register');
 Route::get('/register',[App\Http\Controllers\logs::class, 'showregister'])->name('register');
 Route::delete('/users/{id}', [App\Http\Controllers\logs::class, 'destroy'])->name('users.destroy');
-
+});
 //route entreprises
 
 Route::middleware(['auth'])->group(function () {

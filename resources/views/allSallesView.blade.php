@@ -34,7 +34,36 @@
   padding: 1rem;
   margin-top: -100px;
 }
+@guest
+.hero {
+      min-height: 60vh;
+      background: linear-gradient(180deg, rgba(13,110,253,0.85), rgba(13,110,253,0.55)),
+                  url('{{ asset("images/cbc.jpeg") }}') center/cover no-repeat;
+      color: #fff;
+      display: flex;
+      align-items: center;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      max-width: 540px;
+    }
+    .feature-card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+    }
+    .footer {
+      background: #0d6efd;
+      color: #fff;
+    }
+@endguest
 
+
+@auth
 .sidebar {
   position: fixed;
   top: 0;
@@ -83,20 +112,68 @@
   .sidebar.show { transform: translateX(0); }
   .content { margin-left: 0; }
 }
+@endauth
     </style>
 </head>
 <body>
+  @auth
     @include('partials.sidebar')
-
+      @include('partials.header')
 <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
+  @endauth
 
   @php
       $headerTitle = auth()->check() && in_array(auth()->user()->role, ['admin','rgs','dg'])
           ? 'CBC- Gestion des Salles'
           : 'Utilisateur - Bienvenue au portail du CBC';
   @endphp
-  @include('partials.header', ['title' => $headerTitle])
-  
+  @guest 
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="{{ route('accueil') }}">CBC Portail</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('accueil') }}">Accueil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ route('home') }}">Salles</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('reservations.form') }}">Réservations</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+        <div class="d-flex ms-lg-3 mt-3 mt-lg-0">
+          <a href="{{ route('login') }}" class="btn btn-light btn-sm">Se connecter</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <span class="badge bg-warning text-dark mb-3">Réservation entreprise & association</span>
+          <h1>Bienvenue sur le portail CBC</h1>
+          <p>Consultez toutes les salles disponibles et réservez en ligne rapidement.</p>
+          <div class="d-flex gap-2">
+            <a href="{{ route('accueil') }}" class="btn btn-light btn-lg">Accueil</a>
+            <a href="{{ route('reservations.form') }}" class="btn btn-outline-light btn-lg">Voir mes reservations</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  @endguest
 
 <main class="content">
   <!-- le contenu existant de la page -->
@@ -109,11 +186,7 @@
       </div>
     @endcan
   @endauth
-  @guest
-  <div class="mb-3 d-flex gap-2">
-        <a href="{{ route('reservations.form') }}" class="btn btn-outline-primary">Voir mes réservations</a>
-      </div>
-  @endguest
+  <br>
 
   <div class="row g-3">
     @forelse($pays as $p)

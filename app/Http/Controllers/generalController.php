@@ -21,7 +21,10 @@ class generalController extends Controller
     {
         return view('reservGenerale');
     }
-
+public function accueil()
+    {
+        return view('acceuil');
+    }
 
     public function storeReservation(Request $request)
     {
