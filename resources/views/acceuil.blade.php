@@ -32,9 +32,11 @@
       box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
     }
     .footer {
-      background: #0d6efd;
-      color: #fff;
-    }
+  background: #0d6efd;
+  color: #fff;
+  padding: 2rem 0;
+  margin-top: 2rem;
+}
   </style>
 </head>
 <body>
@@ -123,7 +125,9 @@
       </div>
     </section>
   </main>
-
+<br>
+<br>
+<br>
   <footer class="footer py-4">
     <div class="container text-center">
       <p class="mb-0">© 2026 GestionSalles — Portail CBC</p>

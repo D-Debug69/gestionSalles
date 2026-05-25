@@ -57,9 +57,11 @@
       box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
     }
     .footer {
-      background: #0d6efd;
-      color: #fff;
-    }
+  background: #0d6efd;
+  color: #fff;
+  padding: 2rem 0;
+  margin-top: 2rem;
+}
 @endguest
 
 
@@ -262,7 +264,6 @@
 
                             @guest
                               <button type="button" class="btn btn-sm btn-outline-primary" onclick="openSalleModal({{ $salle->id }})">Voir</button>
-                              <a href="{{ route('reservGenerale', ['salle_id' => $salle->id, 'nomSalle' => $salle->nom]) }}" class="btn btn-sm btn-outline-primary">Réserver</a>
                             @endguest
                             </div>
                           @endforeach
@@ -327,11 +328,11 @@
 </main>
 
 
-
-  <footer class="text-muted small py-3">
-        © 2026 GestionSalles — Interface admin
-      </footer>
-
+@guest
+  <footer class="footer py-4 mt-5">
+  © 2026 GestionSalles — Interface admin
+</footer>
+@endguest
   <script>
         (function(){
   const sidebar = document.getElementById('mainSidebar');

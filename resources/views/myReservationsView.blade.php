@@ -32,9 +32,11 @@
       box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
     }
     .footer {
-      background: #0d6efd;
-      color: #fff;
-    }
+  background: #0d6efd;
+  color: #fff;
+  padding: 2rem 0;
+  margin-top: 2rem;
+}
   </style>
 </head>
 <body>
@@ -225,7 +227,7 @@
     </div>
   </main>
 
-  <footer class="text-muted small py-3">
+  <footer class="footer py-4">
     © 2026 GestionSalles
   </footer>
 

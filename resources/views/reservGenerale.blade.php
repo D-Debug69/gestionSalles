@@ -7,83 +7,86 @@
   
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <style>
-    body { padding-top: 70px; }
-    .top-brand { font-weight:700; letter-spacing: .5px; }
-    .card-overview { min-height: 120px; }
-    :root { --sidebar-width: 240px; }
-
-    .page-hero {
-  height: 220px;
-  background-image:
-    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.05)),
-    url('{{ asset("images/cbc.jpeg") }}');
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: flex-end;
+    body {
+      padding-top: 70px;
+      background: #f8f9fa;
+    }
+    .hero {
+      min-height: 60vh;
+      background: linear-gradient(180deg, rgba(13,110,253,0.85), rgba(13,110,253,0.55)),
+                  url('{{ asset("images/cbc.jpeg") }}') center/cover no-repeat;
+      color: #fff;
+      display: flex;
+      align-items: center;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      max-width: 540px;
+    }
+    .feature-card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+    }
+    .footer {
+  background: #0d6efd;
   color: #fff;
-  padding: 1rem;
-  margin-top: -100px;
+  padding: 2rem 0;
+  margin-top: 2rem;
 }
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: var(--sidebar-width);
-  background:#fff;
-  border-right:1px solid #e6e6e6;
-  z-index:1030;
-  overflow:auto;
-  transform: translateX(0);
-  transition: transform .25s ease, width .25s ease;
-}
-
-/* Etat masqué */
-.sidebar.collapsed {
-  transform: translateX(calc(-1 * var(--sidebar-width)));
-}
-
-.sidebar .logo {
-  width: 70px;
-  height: 70px;
-  object-fit: cover;
-  display: block;
-}
-
-/* Content se décale */
-.content {
-  margin-left: var(--sidebar-width);
-  width: calc(100% - var(--sidebar-width));
-  min-height: 100vh;
-  padding: 1.25rem;
-  transition: margin-left .25s ease, width .25s ease;
-}
-.content.collapsed {
-  margin-left: 0;
-  width: 100%;
-}
-
-/* bouton toggle (fixe en haut gauche) */
-.sidebar-toggle { position: fixed; top: .75rem; left: .75rem; z-index:1040; }
-
-/* Mobile behavior: translate default to hidden and show via .show */
-@media (max-width: 991.98px) {
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.show { transform: translateX(0); }
-  .content { margin-left: 0; }
-}
-    </style>
+  </style>
 </head>
 
 <body>
+ <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="{{ route('accueil') }}">CBC Portail</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    @include('partials.sidebar')
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link active" href="{{ route('accueil') }}">Accueil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('home') }}">Salles</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('reservations.form') }}">Réservations</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+        <div class="d-flex ms-lg-3 mt-3 mt-lg-0">
+          <a href="{{ route('login') }}" class="btn btn-light btn-sm">Se connecter</a>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-    <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary sidebar-toggle" aria-controls="mainSidebar" aria-expanded="true">☰</button>
-
-    @include('partials.header', ['title' => 'CBC-Reservation'])
+  <header class="hero">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <span class="badge bg-warning text-dark mb-3">Réservation entreprise & association</span>
+          <h1>Bienvenue sur le portail CBC</h1>
+          <p>Réservez votre salle en ligne rapidement, consultez vos demandes et suivez facilement toutes vos réservations.</p>
+          <div class="d-flex gap-2">
+            <a href="{{ route('home') }}" class="btn btn-outline-light btn-lg">Découvrir</a>
+            <a href="{{ route('reservations.form') }}" class="btn btn-light btn-lg">Voir mes réservations</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
 <main class="content">
 
@@ -99,7 +102,7 @@
       </div>
       <div class="modal-body text-center">
         <p class="mb-4">Conservez ce code pour consulter votre réservation :</p>
-        <div style="font-size: 3rem; font-weight: bold; color: #28a745; text-align: center; padding: 2rem; border: 3px solid #28a745; border-radius: 10px; background: #f8f9fa; letter-spacing: 5px; font-family: 'Courier New', monospace;">
+        <div id="otpCode" style="font-size: 3rem; font-weight: bold; color: #28a745; text-align: center; padding: 2rem; border: 3px solid #28a745; border-radius: 10px; background: #f8f9fa; letter-spacing: 5px; font-family: 'Courier New', monospace;">
           {{ session('otp') }}
         </div>
         <p class="mt-4 text-muted">
@@ -108,54 +111,90 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" id="manualCloseBtn">Fermer</button>
-        <button type="button" class="btn btn-primary" onclick="copyToClipboard()">Copier le code</button>
+        <button type="button" class="btn btn-primary" onclick="downloadOtp()">Télécharger le code</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
+  function downloadOtp() {
+    const otp = document.getElementById('otpCode')?.textContent.trim();
+    if (!otp) return;
+
+    const content = `Votre code OTP : ${otp}\n`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `otp-${otp}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+  }
+
+  function hideOtpModal() {
+    const otpModalEl = document.getElementById('otpModal');
+    if (!otpModalEl) return;
+
+    const modalInstance = bootstrap.Modal.getInstance(otpModalEl);
+    if (modalInstance) {
+      modalInstance.hide();
+    } else {
+      otpModalEl.classList.remove('show');
+      otpModalEl.style.display = 'none';
+    }
+  }
+
   window.addEventListener('load', () => {
-    const modal = new bootstrap.Modal(document.getElementById('otpModal'), { backdrop: 'static', keyboard: false });
+    const otpModalEl = document.getElementById('otpModal');
+    if (!otpModalEl) return;
+
+    if (sessionStorage.getItem('otpModalShown')) {
+      hideOtpModal();
+      return;
+    }
+
+    sessionStorage.setItem('otpModalShown', '1');
+
+    const modal = new bootstrap.Modal(otpModalEl, {
+      backdrop: 'static',
+      keyboard: false
+    });
     modal.show();
 
-  let seconds = 10;
-  const countdownEl = document.getElementById('countdown');
-  const interval = setInterval(() => {
-    seconds--;
-    countdownEl.textContent = seconds;
-    if (seconds <= 0) {
+    let seconds = 10;
+    const countdownEl = document.getElementById('countdown');
+    const interval = setInterval(() => {
+      seconds--;
+      if (countdownEl) countdownEl.textContent = seconds;
+      if (seconds <= 0) {
+        clearInterval(interval);
+        modal.hide();
+      }
+    }, 1000);
+
+    document.getElementById('closeModalBtn')?.addEventListener('click', () => {
       clearInterval(interval);
       modal.hide();
-    }
-  }, 1000);
-
-  document.getElementById('closeModalBtn').addEventListener('click', () => {
-    clearInterval(interval);
-    modal.hide();
-  });
-  document.getElementById('manualCloseBtn').addEventListener('click', () => {
-    clearInterval(interval);
-    modal.hide();
-  });
-
-  function copyToClipboard() {
-    const otp = document.querySelector('[style*="font-family"]').textContent.trim();
-    navigator.clipboard.writeText(otp).then(() => {
-      alert('Code copié !');
     });
-  }
-});
+
+    document.getElementById('manualCloseBtn')?.addEventListener('click', () => {
+      clearInterval(interval);
+      modal.hide();
+    });
+  });
+
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted || sessionStorage.getItem('otpModalShown')) {
+      hideOtpModal();
+    }
+  });
 </script>
 @endif
-
-
-
-<div>
-  <button class="btn btn-outline-secondary" onclick="window.location.href='/'">
-    Retour à l'accueuil
-  </button>
-</div>
 
 @if ($errors->any())
     <div class="alert alert-danger" style="position:fixed; top:20px; right:20px; z-index:9999;">
@@ -171,11 +210,11 @@
 <div  class="container mt-5">
 <p> Bienvenue veuillez choisir votre profil</p>
 
- <button onclick="openForm('entreprise')" id="toggleEntrepriseBtn" type="button" class="btn btn-primary" aria-expanded="false">
+ <button onclick="openForm('entreprise')" id="toggleEntrepriseBtn" type="button" class="btn btn-primary btn-lg" aria-expanded="false">
     Entreprise
 </button>
 
-  <button onclick="openForm('association')" id="toggleAssociationBtn" type="button" class="btn btn-primary" aria-expanded="false">
+  <button onclick="openForm('association')" id="toggleAssociationBtn" type="button" class="btn btn-primary btn-lg" aria-expanded="false">
     Association
   </button>
 </div>
@@ -657,52 +696,17 @@
   });
 </script>
 
-<!--Script de la sidebar -->
-<script>
-        (function(){
-  const sidebar = document.getElementById('mainSidebar');
-  const toggle = document.getElementById('sidebarToggle');
-  const content = document.querySelector('.content') || document.querySelector('main') || document.body;
-
-  if (!sidebar || !toggle) return;
-
-  // initial state from localStorage
-  const saved = localStorage.getItem('sidebar-collapsed') === 'true';
-  if (saved) {
-    sidebar.classList.add('collapsed');
-    content.classList.add('collapsed');
-    toggle.setAttribute('aria-expanded', 'false');
-    sidebar.setAttribute('aria-hidden', 'true');
-  } else {
-    toggle.setAttribute('aria-expanded', 'true');
-    sidebar.setAttribute('aria-hidden', 'false');
-  }
-
-  toggle.addEventListener('click', () => {
-    const isCollapsed = sidebar.classList.toggle('collapsed');
-    content.classList.toggle('collapsed', isCollapsed);
-    toggle.setAttribute('aria-expanded', String(!isCollapsed));
-    sidebar.setAttribute('aria-hidden', String(isCollapsed));
-    localStorage.setItem('sidebar-collapsed', String(isCollapsed));
-  });
-
-  // fermer/ouvrir avec Escape (utile si sidebar visible sur mobile)
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      const isCollapsed = sidebar.classList.contains('collapsed');
-      if (!isCollapsed && window.innerWidth <= 991.98) {
-        sidebar.classList.add('collapsed');
-        content.classList.add('collapsed');
-        toggle.setAttribute('aria-expanded', 'false');
-        sidebar.setAttribute('aria-hidden', 'true');
-      }
-    }
-  });
-})();
-  </script>
-
 </main>
+<br>
+<br>
+<br>
 
+
+<footer class="footer py-4">
+    <div class="container text-center">
+      <p class="mb-0">© 2026 GestionSalles — Portail CBC</p>
+    </div>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
