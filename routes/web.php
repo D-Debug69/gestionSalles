@@ -8,6 +8,14 @@ Route::get('/',[App\Http\Controllers\GeneralController::class, 'accueil'])->name
 //reservations
 Route::get('/reservGenerale',[App\Http\Controllers\GeneralController::class, 'reservGenerale'])->name('reservGenerale');
 
+//pdf confirmer
+Route::get('/reservations/{reservation}/download-pdf', [App\Http\Controllers\GeneralController::class, 'downloadPdf'])
+    ->name('reservations.download-pdf');
+
+//annule reserv
+Route::post('/reservations/{id}/cancel', [App\Http\Controllers\GeneralController::class, 'cancelReservation'])
+    ->name('reservations.cancel');
+
 //sauvegarder une reserv
 Route::post('/reservations', [App\Http\Controllers\GeneralController::class, 'storeReservation'])->name('reservations.store');
 Route::post('/reservations', [App\Http\Controllers\GeneralController::class, 'storeReservation'])->name('reservations.store');

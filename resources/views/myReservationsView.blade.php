@@ -196,6 +196,11 @@
               @else
                 <p>Aucune info d'entreprise/association liée.</p>
               @endif
+              @if ($reservation->statut === 'confirmed')
+              <a href="{{ route('reservations.download-pdf', $reservation->id) }}" class="btn btn-primary" target="_blank">
+                <i class="bi bi-file-pdf"></i> Confirmer ma présence (PDF)
+              </a>
+              @endif
             </div>
           </div>
         </div>
@@ -224,6 +229,17 @@
           </ul>
         </div>
       </div>
+    </div>
+
+   <div class="container mt-4">
+    @if($reservation->statut === 'pending')
+  <form action="{{ route('reservations.cancel', $reservation->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment annuler cette réservation ?')">
+      @csrf
+      <button type="submit" class="btn btn-secondary">Annuler la réservation</button>
+  </form>
+      @elseif($reservation->statut === 'canceled')
+        <span class="text-muted">Réservation annulée</span>
+      @endif
     </div>
   </main>
 

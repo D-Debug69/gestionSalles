@@ -84,6 +84,18 @@
 
 <main class="content">
   <!-- le contenu existant de la page -->
+<div class="d-flex justify-content-end mb-4">
+  @if(!empty($archived) && $archived)
+    <a href="{{ route('allReservationsView') }}" class="btn btn-outline-primary">
+      Voir les réservations actives
+    </a>
+  @else
+    <a href="{{ route('allReservationsView', ['archived' => 1]) }}" class="btn btn-outline-secondary">
+      Voir les réservations archivées
+    </a>
+  @endif
+</div>
+
 @if ($reservations->isEmpty())
 <div class="alert alert-info">
   <p>Aucune réservation trouvée.</p>
@@ -146,7 +158,7 @@
                       @endauth
 
 
-          @if($r->statut === 'pending') <span class="badge bg-warning text-dark">En attente</span>@elseif($r->statut === 'confirmed') <span class="badge bg-success">Confirmée</span>@elseif($r->statut === 'rejected') <span class="badge bg-danger">Refusée</span>@endif
+          @if($r->statut === 'pending') <span class="badge bg-warning text-dark">En attente</span>@elseif($r->statut === 'confirmed') <span class="badge bg-success">Confirmée</span>@elseif($r->statut === 'rejected') <span class="badge bg-danger">Refusée</span>@elseif($r->statut === 'canceled') <span class="badge bg-secondary">Annulée</span>@endif
         </div>
       </div>
     </div>

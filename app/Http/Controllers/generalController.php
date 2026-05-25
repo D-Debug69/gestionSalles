@@ -14,6 +14,7 @@ use App\Models\ReservationSalles;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class generalController extends Controller
 {
@@ -21,7 +22,33 @@ class generalController extends Controller
     {
         return view('reservGenerale');
     }
-public function accueil()
+
+    public function downloadPdf(ReservationSalles $reservation)
+    {
+    // Vérifier que la réservation est confirmée
+    if ($reservation->statut !== 'confirmed') {
+        abort(403, 'Seules les réservations confirmées peuvent être téléchargées');
+    }
+    
+    $pdf = Pdf::loadView('pdf', ['reservation' => $reservation]);
+    return $pdf->download('reservation_' . $reservation->id . '.pdf');
+    }
+
+    public function cancelReservation($id)
+    {
+    $reservation = ReservationSalles::findOrFail($id);
+
+    // Si tu veux empêcher d'annuler les réservations déjà annulées
+    if ($reservation->statut === 'canceled') {
+        return redirect()->back()->with('warning', 'Cette réservation est déjà annulée.');
+    }
+
+    $reservation->statut = 'canceled';
+    $reservation->save();
+
+    return redirect()->back()->with('success', 'La réservation a bien été annulée.');
+    }
+    public function accueil()
     {
         return view('acceuil');
     }
@@ -456,22 +483,29 @@ $approvedCount= collect([
                 return view('allSallesView', ['pays' => $pays]);
 
     }
-    public function allReservationsView()
+    public function allReservationsView(Request $request)
     {
         $query = ReservationSalles::with(['entreprise', 'association', 'user', 'salle.ville']);
 
-            if (auth()->check() && !auth()->user()->hasRole('Admin')) {
-                $userCity = auth()->user()->ville;
-
-            if ($userCity) {
-                $query->whereHas('salle.ville', function ($q) use ($userCity) {
+    if (auth()->check() && !auth()->user()->hasRole('Admin')) {
+        $userCity = auth()->user()->ville;
+        if ($userCity) {
+            $query->whereHas('salle.ville', function ($q) use ($userCity) {
                 $q->where('nom', $userCity);
             });
-                            }
-            }
+        }
+    }
+
+    if ($request->query('archived') === '1') {
+        $query->where('statut', 'canceled');
+        $archived = true;
+    } else {
+        $query->where('statut', '!=', 'canceled');
+        $archived = false;
+    }
 
     $reservations = $query->orderBy('created_at','desc')->get();
-    return view('allReservationsView', compact('reservations'));
+    return view('allReservationsView', compact('reservations', 'archived'));
     }
     public function allUsersView(){
         $users = User::all();
