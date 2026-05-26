@@ -117,6 +117,12 @@
   </div>
 </div>
 
+@if(session('otp'))
+<script>
+  sessionStorage.removeItem('otpModalShown');
+</script>
+@endif
+
 <script>
   function downloadOtp() {
     const otp = document.getElementById('otpCode')?.textContent.trim();

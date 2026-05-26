@@ -179,6 +179,20 @@ public function downloadReceipt(ReservationSalles $reservation)
 
         [$start, $end] = explode('-', $validated['reservation_time']);
 
+        // trouver la salle demandée
+$salle = Salle::where('nom', $validated['nomSalle'])->first();
+
+// déterminer le prix selon le créneau (utilise les nouveaux champs prix_matin/prix_apres_midi/prix_journee)
+$prixReservation = 0;
+if ($salle) {
+    $prixReservation = match($validated['reservation_time']) {
+        '07:00-14:00' => $salle->prix_matin ?? $salle->prix,
+        '14:00-21:00' => $salle->prix_apres_midi ?? $salle->prix,
+        '07:00-21:00' => $salle->prix_journee ?? $salle->prix,
+        default => $salle->prix ?? 0,
+    };
+}
+
         $r = ReservationSalles::create([
             'statut' => 'pending',
             'nomSalle' => $validated['nomSalle'],
@@ -191,6 +205,7 @@ public function downloadReceipt(ReservationSalles $reservation)
             'user_id' => Auth::id(),
             'entreprise_id' => $entreprise->id,
             'otp' => rand(100000, 999999),
+            'prix' => $prixReservation,
         ]);
 
     } 
@@ -263,6 +278,20 @@ public function downloadReceipt(ReservationSalles $reservation)
 
         [$start, $end] = explode('-', $validated['reservation_time']);
 
+        // trouver la salle demandée
+$salle = Salle::where('nom', $validated['nomSalle'])->first();
+
+// déterminer le prix selon le créneau (utilise les nouveaux champs prix_matin/prix_apres_midi/prix_journee)
+$prixReservation = 0;
+if ($salle) {
+    $prixReservation = match($validated['reservation_time']) {
+        '07:00-14:00' => $salle->prix_matin ?? $salle->prix,
+        '14:00-21:00' => $salle->prix_apres_midi ?? $salle->prix,
+        '07:00-21:00' => $salle->prix_journee ?? $salle->prix,
+        default => $salle->prix ?? 0,
+    };
+}
+
         $r = ReservationSalles::create([
             'statut' => 'pending',
             'nomSalle' => $validated['nomSalle'],
@@ -276,6 +305,7 @@ public function downloadReceipt(ReservationSalles $reservation)
             'user_id' => Auth::id(),
             'association_id' => $association->id,
             'otp' => rand(100000, 999999),
+            'prix' => $prixReservation,
         ]);
 
     } else {

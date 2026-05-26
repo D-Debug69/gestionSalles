@@ -38,6 +38,7 @@ class ReservationSalles extends Model
         'approved_admin',
         'approved_admin_by',
         'approved_admin_at',
+        'prix',
     ];
 
     protected $casts = [
@@ -45,6 +46,7 @@ class ReservationSalles extends Model
         'dateEmission' => 'datetime',
         'dateTraitement' => 'datetime',
         'reservation_date' => 'date',
+        'prix' => 'decimal:2',
     ];
 
 

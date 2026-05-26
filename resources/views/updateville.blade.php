@@ -136,10 +136,18 @@
                     <label class="form-label">Capacité</label>
                     <input type="number" class="form-control" name="salles[{{ $index }}][capacite]" value="{{ $salle->capacite }}">
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label">Prix</label>
-                    <input type="number" class="form-control" name="salles[{{ $index }}][prix]" value="{{ $salle->prix }}">
-                </div>
+                
+    <label class="form-label">Prix matin</label>
+    <input type="number" class="form-control" name="salles[{{ $index }}][prix_matin]" value="{{ $salle->prix_matin }}">
+</div>
+<div class="col-md-2">
+    <label class="form-label">Prix après-midi</label>
+    <input type="number" class="form-control" name="salles[{{ $index }}][prix_apres_midi]" value="{{ $salle->prix_apres_midi }}">
+</div>
+<div class="col-md-2">
+    <label class="form-label">Prix journée</label>
+    <input type="number" class="form-control" name="salles[{{ $index }}][prix_journee]" value="{{ $salle->prix_journee }}">
+</div>
                 <div class="col-md-3">
                     <label class="form-label">Équipements</label>
                     <input type="text" class="form-control" name="salles[{{ $index }}][equipements]" value="{{ $salle->equipements }}">
@@ -202,10 +210,18 @@
                     <label for="salle_capacite_${salleCount}" class="form-label">Capacité</label>
                     <input type="number" class="form-control" name="salles[${salleCount}][capacite]" id="salle_capacite_${salleCount}" placeholder="Ex: 50" min="1">
                 </div>
-                <div class="col-md-2">
-                    <label for="salle_prix_${salleCount}" class="form-label">Prix (XoF)</label>
-                    <input type="number" class="form-control" name="salles[${salleCount}][prix]" id="salle_prix_${salleCount}" placeholder="Ex: 50.00" step="0.01" min="0">
-                </div>
+<div class="col-md-2">
+    <label for="salles[${salleCount}][prix_matin]" class="form-label">Prix matin</label>
+    <input type="number" class="form-control" name="salles[${salleCount}][prix_matin]" step="0.01" min="0">
+</div>
+<div class="col-md-2">
+    <label for="salles[${salleCount}][prix_apres_midi]" class="form-label">Prix après-midi</label>
+    <input type="number" class="form-control" name="salles[${salleCount}][prix_apres_midi]" step="0.01" min="0">
+</div>
+<div class="col-md-2">
+    <label for="salles[${salleCount}][prix_journee]" class="form-label">Prix journée</label>
+    <input type="number" class="form-control" name="salles[${salleCount}][prix_journee]" step="0.01" min="0">
+</div>
                 <div class="col-md-3">
                     <label for="salle_equipements_${salleCount}" class="form-label">Équipements</label>
                     <input type="text" class="form-control" name="salles[${salleCount}][equipements]" id="salle_equipements_${salleCount}" placeholder="Ex: Projecteur, Tables">
@@ -241,8 +257,16 @@
                     <input type="number" class="form-control" name="salles[${salleCount}][capacite]" id="salle_capacite_${salleCount}" placeholder="Ex: 50" min="1">
                 </div>
                 <div class="col-md-2">
-                    <label for="salle_prix_${salleCount}" class="form-label">Prix (XoF)</label>
-                    <input type="number" class="form-control" name="salles[${salleCount}][prix]" id="salle_prix_${salleCount}" placeholder="Ex: 50.00" step="0.01" min="0">
+                    <label for="salle_prix_matin_${salleCount}" class="form-label">Prix matin</label>
+                    <input type="number" class="form-control" name="salles[${salleCount}][prix_matin]" id="salle_prix_matin_${salleCount}" placeholder="Ex: 50.00" step="0.01" min="0">
+                </div>
+                <div class="col-md-2">
+                    <label for="salle_prix_apres_midi_${salleCount}" class="form-label">Prix après-midi</label>
+                    <input type="number" class="form-control" name="salles[${salleCount}][prix_apres_midi]" id="salle_prix_apres_midi_${salleCount}" placeholder="Ex: 50.00" step="0.01" min="0">
+                </div>
+                <div class="col-md-2">
+                    <label for="salle_prix_journee_${salleCount}" class="form-label">Prix journée</label>
+                    <input type="number" class="form-control" name="salles[${salleCount}][prix_journee]" id="salle_prix_journee_${salleCount}" placeholder="Ex: 50.00" step="0.01" min="0">
                 </div>
                 <div class="col-md-3">
                     <label for="salle_equipements_${salleCount}" class="form-label">Équipements</label>

@@ -260,7 +260,7 @@
                               <!-- Photo de la salle -->
                               <img src="{{ $salle->image_url }}" alt="{{ $salle->nom }}" style="width: 30px; height: 30px; margin-right: 10px; object-fit: cover;">
                               <!-- Détails de la salle -->
-                              <span>{{ $salle->nom }} (Capacité: {{ $salle->capacite ?? 'N/A' }}, Prix: {{ $salle->prix ?? 'N/A' }}, Équipements: {{ $salle->equipements ?? 'N/A' }})</span>
+                              <span>{{ $salle->nom }} (Capacité: {{ $salle->capacite ?? 'N/A' }}, Prix matin: {{ $salle->prix_matin ?? 'N/A' }}, Prix après-midi: {{ $salle->prix_apres_midi ?? 'N/A' }}, Prix journée: {{ $salle->prix_journee ?? 'N/A' }}, Équipements: {{ $salle->equipements ?? 'N/A' }})</span>
 
                             @guest
                               <button type="button" class="btn btn-sm btn-outline-primary" onclick="openSalleModal({{ $salle->id }})">Voir</button>

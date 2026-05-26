@@ -114,7 +114,21 @@
     $salleNom = $reservation->salle?->nom ?? $reservation->nomSalle ?? 'N/C';
     $salleVille = $reservation->salle?->ville?->nom ?? 'N/C';
     $sallePays = $reservation->salle?->ville?->pays?->nom ?? 'N/C';
-    $prix = $reservation->salle?->prix ?? 0;
+
+// priorité : prix stocké sur la réservation
+$prix = $reservation->prix ?? null;
+
+// si pas de prix stocké, tenter calculer via créneau + méthode utilitaire Salle
+if (is_null($prix) && !empty($reservation->reservation_time) && $reservation->salle) {
+    // nécessite la méthode priceForSlot() dans app/Models/Salle.php
+    $prix = $reservation->salle->priceForSlot($reservation->reservation_time) ?? null;
+}
+
+// fallback : prix de la salle si encore indéfini, sinon 0
+$prix = $prix ?? ($reservation->salle?->prix ?? 0);
+
+// cast propre (évite warnings dans number_format)
+$prix = (float) $prix;
 @endphp
 
 <div class="page">
