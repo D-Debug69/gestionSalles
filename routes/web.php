@@ -8,6 +8,10 @@ Route::get('/',[App\Http\Controllers\GeneralController::class, 'accueil'])->name
 //reservations
 Route::get('/reservGenerale',[App\Http\Controllers\GeneralController::class, 'reservGenerale'])->name('reservGenerale');
 
+//pdf recu
+Route::get('/reservations/{reservation}/download-receipt', [App\Http\Controllers\GeneralController::class, 'downloadReceipt'])
+    ->name('reservations.download-receipt');
+
 //pdf confirmer
 Route::get('/reservations/{reservation}/download-pdf', [App\Http\Controllers\GeneralController::class, 'downloadPdf'])
     ->name('reservations.download-pdf');

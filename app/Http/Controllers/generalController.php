@@ -23,16 +23,70 @@ class generalController extends Controller
         return view('reservGenerale');
     }
 
-    public function downloadPdf(ReservationSalles $reservation)
-    {
-    // Vérifier que la réservation est confirmée
+    
+public function downloadPdf(ReservationSalles $reservation)
+{
     if ($reservation->statut !== 'confirmed') {
         abort(403, 'Seules les réservations confirmées peuvent être téléchargées');
     }
-    
-    $pdf = Pdf::loadView('pdf', ['reservation' => $reservation]);
+
+    $clientNom = $reservation->entreprise?->nomEntreprise
+        ?? $reservation->association?->nomAssociation
+        ?? $reservation->nom_demandeur
+        ?? 'N/C';
+
+    $clientType = $reservation->entreprise ? 'Entreprise'
+        : ($reservation->association ? 'Association' : 'Particulier');
+
+    $clientAdresse = $reservation->entreprise?->adresseCompleteE
+        ?? $reservation->association?->adresseCompleteA
+        ?? 'N/C';
+
+    $clientVille = $reservation->entreprise?->ville
+        ?? $reservation->association?->ville
+        ?? $reservation->salle?->ville?->nom
+        ?? 'N/C';
+
+    $clientTelephone = $reservation->telephone;
+    $clientEmail = $reservation->email;
+    $generatedAt = now();
+    $prix = $reservation->salle?->prix ?? 0;
+    $bloc = $reservation->start_time && $reservation->end_time
+        ? ($reservation->start_time >= '07:00:00' && $reservation->end_time <= '14:00:00' ? 'matin' : 'après-midi')
+        : 'N/C';
+
+    $pdf = Pdf::loadView('pdf', compact(
+        'reservation',
+        'clientNom',
+        'clientType',
+        'clientAdresse',
+        'clientVille',
+        'clientTelephone',
+        'clientEmail',
+        'generatedAt',
+        'prix',
+        'bloc'
+    ));
+
     return $pdf->download('reservation_' . $reservation->id . '.pdf');
+}
+
+
+public function downloadReceipt(ReservationSalles $reservation)
+{
+    if ($reservation->statut !== 'confirmed') {
+        abort(403, 'Seules les réservations confirmées peuvent télécharger un reçu.');
     }
+
+    $generatedAt = now();
+
+    $pdf = Pdf::loadView('recu', [
+        'reservation' => $reservation,
+        'generatedAt' => $generatedAt,
+    ]);
+
+    return $pdf->download('recu_reservation_' . $reservation->id . '.pdf');
+}
 
     public function cancelReservation($id)
     {

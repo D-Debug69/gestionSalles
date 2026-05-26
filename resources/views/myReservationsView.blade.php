@@ -198,7 +198,10 @@
               @endif
               @if ($reservation->statut === 'confirmed')
               <a href="{{ route('reservations.download-pdf', $reservation->id) }}" class="btn btn-primary" target="_blank">
-                <i class="bi bi-file-pdf"></i> Confirmer ma présence (PDF)
+                <i class="bi bi-file-pdf"></i> Telecharger le contrat (PDF)
+              </a>
+              <a href="{{ route('reservations.download-receipt', $reservation->id) }}" class="btn btn-outline-primary" target="_blank">
+                <i class="bi bi-file-earmark-text"></i> Télécharger le reçu (PDF)
               </a>
               @endif
             </div>
